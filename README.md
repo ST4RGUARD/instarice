@@ -9,12 +9,16 @@ auto dev env setup
 
 instarice will check mac or linux
 
-instarice will first remove existing .zshrc, nvim, and ghostty configs
+instarice will determine package manager
+  - if none existing will install
+
+instarice will first remove existing ~/.zshrc, ~/.vimrc, ~/.vim/, ~/.config/nvim/, and ~/.config/ghostty/config
 
 instarice will next download these from this repo
 
 instarice will ask to install all languages - all supported lang in lang.yml in this repo
 
 if yes - instarice will begin setup of devenv for mac or linux system installing ghostty terminal, language envs and neovim
+ - this will include neceassary gems, modules, etc
 
 if no - instarice will begin asking 1 by 1 which language to install
