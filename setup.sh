@@ -72,7 +72,7 @@ else
 fi
 
 # Fix permissions 
-sudo chown -R "$USER":staff "$HOME/.zshrc" "$HOME/.vimrc" "$HOME/.vim" "$HOME/.config" 2>/dev/null
+sudo chown -R "$USER":staff "$HOME/.irbrc" $HOME/.zshrc" "$HOME/.vimrc" "$HOME/.vim" "$HOME/.config" 2>/dev/null
 
 # Add ruby to PATH for Homebrew (macOS specific fix)
 if [[ "$OS" == "mac" && "$PACKAGE_MANAGER" == "brew" ]]; then

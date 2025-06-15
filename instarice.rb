@@ -1,24 +1,24 @@
 #!/usr/bin/env ruby
-require 'fileutils'
-require 'open3'
-require 'yaml'
+require "fileutils"
+require "open3"
+require "yaml"
 
 def log(msg)
-  puts "[\e[32mINFO\e[0m] #{msg}"
+  puts("[\e[32mINFO\e[0m] #{msg}")
 end
 
 def error(msg)
-  puts "[\e[31mERROR\e[0m] #{msg}"
+  puts("[\e[31mERROR\e[0m] #{msg}")
 end
 
 def header(title)
-  puts "\n\e[35m#{"=" * 50}\n#{title}\n#{"=" * 50}\e[0m"
+  puts("\n\e[35m#{"=" * 50}\n#{title}\n#{"=" * 50}\e[0m")
 end
 
 def ask_yes_no(question)
-  print "\n#{question} (y/n): "
+  print("\n#{question} (y/n): ")
   response = STDIN.gets.strip.downcase
-  response.start_with?('y')
+  response.start_with?("y")
 end
 
 def execute(cmd)
@@ -30,7 +30,7 @@ end
 os = ARGV[0]
 unless %w[mac linux].include?(os)
   error("Please run: ruby instarice.rb <mac|linux>")
-  exit 1
+  exit(1)
 end
 
 header("🧼 Cleaning up old config files")
@@ -38,6 +38,7 @@ HOME = Dir.home
 
 paths_to_remove = [
   "#{HOME}/.zshrc",
+  "#{HOME}/.irbrc",
   "#{HOME}/.vimrc",
   "#{HOME}/.vim",
   "#{HOME}/.config/nvim",
@@ -52,7 +53,7 @@ end
 header("📁 Copying config files")
 
 # Copying to ~/
-%w[.zshrc .vimrc .vim].each do |item|
+%w[.irbrc .zshrc .vimrc .vim].each do |item|
   FileUtils.cp_r(item, "#{HOME}/", verbose: true) if File.exist?(item)
 end
 
@@ -61,42 +62,43 @@ FileUtils.mkdir_p("#{HOME}/.config")
 FileUtils.mkdir_p("#{HOME}/.config/ghostty")
 
 # Copy to ~/.config
-FileUtils.cp_r('nvim', "#{HOME}/.config/", verbose: true) if Dir.exist?('nvim')
-FileUtils.cp_r('config/starship.toml', "#{HOME}/.config/", verbose: true) if File.exist?('config/starship.toml')
-FileUtils.cp('config/ghostty_config', "#{HOME}/.config/ghostty/config", verbose: true) if File.exist?('ghostty_config')
+FileUtils.cp_r("nvim", "#{HOME}/.config/", verbose: true) if Dir.exist?("nvim")
+FileUtils.cp_r("config/starship.toml", "#{HOME}/.config/", verbose: true) if File.exist?("config/starship.toml")
+FileUtils.cp("config/ghostty_config", "#{HOME}/.config/ghostty/config", verbose: true) if File.exist?("ghostty_config")
 
 header("📦 App Installation")
 
 # ---------- Package Manager Detection ----------
 def find_package_manager
-  return 'brew' if `which brew` != ''
-  return 'apt' if `which apt` != ''
-  return 'pacman' if `which pacman` != ''
+  return "brew" if `which brew` != ""
+  return "apt" if `which apt` != ""
+  return "pacman" if `which pacman` != ""
   nil
 end
 
 pkg_manager = find_package_manager
 unless pkg_manager
   error("No supported package manager found!")
-  exit 1
+  exit(1)
 end
+
 log("Package manager detected: #{pkg_manager}")
 
 # ---------- App Installation ----------
 def install_apps(file, os, pkg_manager)
   apps = YAML.load_file(file)
   apps.each do |pkg|
-    cmd =
-      case os
-      when 'mac'
-        "brew install #{pkg}"
-      when 'linux'
-        if pkg_manager == 'apt'
-          "sudo apt install -y #{pkg}"
-        else
-          "sudo pacman -S --noconfirm #{pkg}"
-        end
+    cmd = case os
+    when "mac"
+      "brew install #{pkg}"
+    when "linux"
+      if pkg_manager == "apt"
+        "sudo apt install -y #{pkg}"
+      else
+        "sudo pacman -S --noconfirm #{pkg}"
       end
+    end
+
     log("Installing #{pkg}...")
     system(cmd)
   end
@@ -119,15 +121,28 @@ LANG_TOOL = {
 def install_lang_tool(name, os, pkg_manager)
   case name
   when :ruby
-    os == 'mac' ? system("brew install frum") : system("#{pkg_manager} install -y curl && curl https://frum.sh/install | bash")
+    os == "mac" ? system("brew install frum") : system(
+      "#{pkg_manager} install -y curl && curl https://frum.sh/install | bash"
+    )
   when :python
-    os == 'mac' ? system("brew install rye") : system("curl -sSf https://rye-up.com/get | bash")
+    os == "mac" ? system("brew install rye") : system("curl -sSf https://rye-up.com/get | bash")
   when :rust
     system("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y")
   when :go
-    os == 'mac' ? system("brew install go") : system("#{pkg_manager} install -y golang")
+    os == "mac" ? system("brew install go") : system("#{pkg_manager} install -y golang")
   end
 end
+
+# -- install nvim language tools/gems/modules here --
+# -- python
+system("rye tools install debugpy black")
+# -- ruby
+system("gem install seeing_is_believing")
+# -- golang
+system("go install github.com/incu6us/goimports-reviser/v3@latest")
+system("go install mvdan.cc/gofumpt@latest")
+system("go install github.com/segmentio/golines@latest")
+system("go install github.com/go-delve/delve/cmd/dlv@latest")
 
 if ask_yes_no("Do you want to install all languages from lang.yml?")
   YAML.load_file("lang.yml").each do |lang|
@@ -162,11 +177,12 @@ if missing.empty?
   log("✅ All config files found!")
   if ask_yes_no("Do you want to clean up and uninstall temporary Ruby?")
     case os
-    when 'mac'
+    when "mac"
       execute("brew uninstall ruby")
-    when 'linux'
+    when "linux"
       execute("#{pkg_manager} remove -y ruby")
     end
+
     FileUtils.rm_rf(Dir.pwd)
     log("Cleanup complete! ✨")
   else
@@ -178,16 +194,18 @@ else
 end
 
 # ---------- Final Message ----------
-puts <<~EOF
+puts(
+  <<~EOF
 
-  🎉 Setup is complete!
+    🎉 Setup is complete!
 
-  🚀 Run the following inside Neovim:
-    :Lazy sync
-    :Lazy update
-    :Lazy install
-    :Mason install
+    🚀 Run the following inside Neovim:
+      :Lazy sync
+      :Lazy update
+      :Lazy install
+      :Mason install
 
-  Happy hacking! 💻⚡
+    Happy hacking! 💻⚡
 
-EOF
+  EOF
+)
