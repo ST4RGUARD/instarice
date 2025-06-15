@@ -1,4 +1,4 @@
-##!/usr/bin/env ruby
+#!/usr/bin/env ruby
 require 'fileutils'
 require 'open3'
 require 'yaml'
@@ -17,7 +17,8 @@ end
 
 def ask_yes_no(question)
   print "\n#{question} (y/n): "
-  gets.strip.downcase.start_with?('y')
+  response = STDIN.gets.strip.downcase
+  response.start_with?('y')
 end
 
 def execute(cmd)
@@ -62,7 +63,7 @@ FileUtils.mkdir_p("#{HOME}/.config/ghostty")
 # Copy to ~/.config
 FileUtils.cp_r('nvim', "#{HOME}/.config/", verbose: true) if Dir.exist?('nvim')
 FileUtils.cp_r('config/starship.toml', "#{HOME}/.config/", verbose: true) if File.exist?('config/starship.toml')
-FileUtils.cp('ghostty_config', "#{HOME}/.config/ghostty/config", verbose: true) if File.exist?('ghostty_config')
+FileUtils.cp('config/ghostty_config', "#{HOME}/.config/ghostty/config", verbose: true) if File.exist?('ghostty_config')
 
 header("📦 App Installation")
 
@@ -84,24 +85,20 @@ log("Package manager detected: #{pkg_manager}")
 # ---------- App Installation ----------
 def install_apps(file, os, pkg_manager)
   apps = YAML.load_file(file)
-
-  Ractor.new(apps) do |app_list|
-    app_list.each do |app|
-      Ractor.new(app) do |pkg|
-        cmd =
-          case os
-          when 'mac'
-            "brew install #{pkg}"
-          when 'linux'
-            if pkg_manager == 'apt'
-              "sudo apt install -y #{pkg}"
-            else
-              "sudo pacman -S --noconfirm #{pkg}"
-            end
-          end
-        system(cmd)
+  apps.each do |pkg|
+    cmd =
+      case os
+      when 'mac'
+        "brew install #{pkg}"
+      when 'linux'
+        if pkg_manager == 'apt'
+          "sudo apt install -y #{pkg}"
+        else
+          "sudo pacman -S --noconfirm #{pkg}"
+        end
       end
-    end
+    log("Installing #{pkg}...")
+    system(cmd)
   end
 end
 
@@ -135,9 +132,7 @@ end
 if ask_yes_no("Do you want to install all languages from lang.yml?")
   YAML.load_file("lang.yml").each do |lang|
     lang_sym = lang.strip.downcase.to_sym
-    Ractor.new(lang_sym) do |l|
-      install_lang_tool(l, os, pkg_manager)
-    end
+    install_lang_tool(lang_sym, os, pkg_manager)
   end
 else
   YAML.load_file("lang.yml").each do |lang|
@@ -196,4 +191,3 @@ puts <<~EOF
   Happy hacking! 💻⚡
 
 EOF
-!/usr/bin/env ruby

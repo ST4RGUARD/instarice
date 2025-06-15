@@ -71,18 +71,36 @@ else
   esac
 fi
 
+# Fix permissions 
+sudo chown -R "$USER":staff "$HOME/.zshrc" "$HOME/.vimrc" "$HOME/.vim" "$HOME/.config" 2>/dev/null
+
 # Add ruby to PATH for Homebrew (macOS specific fix)
 if [[ "$OS" == "mac" && "$PACKAGE_MANAGER" == "brew" ]]; then
   RUBY_PATH="$(brew --prefix ruby)/bin"
-  echo "Adding Ruby to PATH: $RUBY_PATH"
-  export PATH="$RUBY_PATH:$PATH"
-  echo 'export PATH="'"$RUBY_PATH"':$PATH"' >> ~/.zshrc
-  source ~/.zshrc
+
+  if ! command -v ruby &> /dev/null || [[ "$(command -v ruby)" != "$RUBY_PATH/"* ]]; then
+    echo "Adding Ruby to PATH: $RUBY_PATH"
+    export PATH="$RUBY_PATH:$PATH"
+
+    SHELL_PROFILE="$HOME/.zshrc"
+    if ! grep -q "$RUBY_PATH" "$SHELL_PROFILE"; then
+      echo 'export PATH="'"$RUBY_PATH"':$PATH"' >> "$SHELL_PROFILE"
+      echo "Ruby path added to $SHELL_PROFILE"
+    else
+      echo "Ruby path already in $SHELL_PROFILE"
+    fi
+
+    echo 'here'
+  else
+    echo "Ruby is already in the correct PATH location: $(command -v ruby)"
+
+  source "$SHELL_PROFILE"
+	fi
 fi
 
 if [[ "$OS" == "mac" ]]; then
-  sudo ruby instarice.rb mac
+  ruby instarice.rb mac
 else
-  sudo ruby instarice.rb linux
+  ruby instarice.rb linux
 fi
 
