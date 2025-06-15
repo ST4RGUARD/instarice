@@ -11,6 +11,7 @@ auto dev env setup
 ---
 
 CLONE REPO
+
 RUN setup.sh
 
 ---
@@ -22,8 +23,6 @@ instarice will determine package manager
 - if none existing will install
 
 instarice will first remove existing ~/.zshrc, ~/.vimrc, ~/.vim/, ~/.config/nvim/, and ~/.config/ghostty/config
-
-instarice will next download these from this repo
 
 instarice will ask to install all languages - all supported lang in lang.yml in this repo
 

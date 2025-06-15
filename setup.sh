@@ -79,3 +79,10 @@ if [[ "$OS" == "mac" && "$PACKAGE_MANAGER" == "brew" ]]; then
   echo 'export PATH="'"$RUBY_PATH"':$PATH"' >> ~/.zshrc
   source ~/.zshrc
 fi
+
+if [[ "$OS" == "mac" ]]; then
+  sudo ruby instarice.rb mac
+else
+  sudo ruby instarice.rb linux
+fi
+
