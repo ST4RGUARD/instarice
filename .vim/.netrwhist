@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =0
+let g:netrw_dirhist_0='/home/nilclass/.vim/plugin'
+let g:netrw_dirhist_9='/home/nilclass/.vim'
+let g:netrw_dirhist_8='/Users/nilClass/.vim/bundle'
+let g:netrw_dirhist_7='/Volumes/kal-el/nilClass/Perforce/ati-malware/tests/security/strikes/malware/2.2022'
+let g:netrw_dirhist_6='/Applications/Google Chrome.app/Contents/Resources/com.google.Chrome.manifest'
+let g:netrw_dirhist_5='/Library/Preferences'
+let g:netrw_dirhist_4='/Library/Application Support/Cisco/AnyConnect Secure Mobility Client/acsock.kext'
+let g:netrw_dirhist_3='/Library/Managed Preferences/nilClass'
+let g:netrw_dirhist_2='/Volumes/kal-el/nilClass/Perforce/ati-cloud-endpoint-poc/data/ati_endpoint_content/T1003/T1003.002/wmic_copy_shadowcopy_sam'
+let g:netrw_dirhist_1='/Volumes/kal-el/nilClass/Perforce/tools/security/scripts/strike_validations/database'

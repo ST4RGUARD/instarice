@@ -1,0 +1,152 @@
+return {
+  -- Other plugins you might have
+  "nvim-lua/plenary.nvim",
+  "christoomey/vim-tmux-navigator",
+
+  {
+    "mrcjkb/rustaceanvim",
+    version = "^5",
+    lazy = false,
+    config = function()
+      local extension_path = "/home/nilclass/.local/share/nvim/mason/packages/codelldb/extension/"
+      local codelldb_path = extension_path .. "adapter/codelldb"
+      local liblldb_path = extension_path .. "lldb/lib/liblldb.so"
+
+      local cfg = require("rustaceanvim.config")
+      vim.g.rustaceanvim = {
+        dap = {
+          adapter = cfg.get_codelldb_adapter(codelldb_path, liblldb_path),
+        },
+      }
+    end,
+  },
+
+  {
+    "mfussenegger/nvim-dap",
+    config = function()
+      vim.keymap.set("n", "<leader>dl", "<cmd>lua require'dap'.step_into()<CR>", { desc = "Debugger step into" })
+      vim.keymap.set("n", "<leader>dj", "<cmd>lua require'dap'.step_over()<CR>", { desc = "Debugger step over" })
+      vim.keymap.set("n", "<leader>dk", "<cmd>lua require'dap'.step_out()<CR>", { desc = "Debugger step out" })
+      vim.keymap.set("n", "<leader>dc", "<cmd>lua require'dap'.continue()<CR>", { desc = "Debugger continue" })
+      vim.keymap.set("n", "<leader>db", "<cmd>DapToggleBreakpoint<CR>", { desc = "Toggle Breakpoint" })
+      vim.keymap.set("n", "<leader>dd",
+        "<cmd>lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>",
+        { desc = "Conditional Breakpoint" })
+      vim.keymap.set("n", "<leader>de", "<cmd>lua require'dap'.terminate()<CR>", { desc = "Reset" })
+      vim.keymap.set("n", "<leader>dr", "<cmd>lua require'dap'.run_last()<CR>", { desc = "Run Last" })
+      vim.keymap.set("n", "<leader>dt", "<cmd>RustLsp testables<CR>", { desc = "Testables" })
+      vim.keymap.set("n", "<leader>dD", "<cmd>RustLsp debuggables<CR>", { desc = "Debug Rust Executable" })
+
+      local dap, dapui = require("dap"), require("dapui")
+      dap.listeners.before.attach.dapui_config = function() dapui.open() end
+      dap.listeners.before.launch.dapui_config = function() dapui.open() end
+      dap.listeners.before.event_terminated.dapui_config = function() dapui.close() end
+      dap.listeners.before.event_exited.dapui_config = function() dapui.close() end
+    end,
+  },
+
+  {
+    'rust-lang/rust.vim',
+    ft = "rust",
+    init = function()
+      vim.g.rustfmt_autosave = 1
+    end
+  },
+
+  {
+    'saecki/crates.nvim',
+    ft = { "toml" },
+    config = function()
+      require("crates").setup {
+        completion = {
+          cmp = {
+            enabled = true
+          },
+        },
+      }
+      require('cmp').setup.buffer({
+        sources = { { name = "creates" } }
+      })
+    end
+  },
+
+  {
+    'rcarriga/nvim-dap-ui',
+    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+    config = function()
+      require("dapui").setup()
+    end,
+  },
+
+  {
+    "jose-elias-alvarez/null-ls.nvim",
+    ft = "go",
+    opts = function()
+      return require "null-ls"
+    end,
+  },
+
+  {
+    "leoluz/nvim-dap-go",
+    ft = "go",
+    dependencies = "mfussenegger/nvim-dap",
+    config = function(_, opts)
+      require("dap-go").setup(opts)
+
+      vim.keymap.set("n", "<leader>dgt", function()
+        require("dap-go").debug_test()
+      end, { desc = "Debug Go Test" })
+
+      vim.keymap.set("n", "<leader>dgl", function()
+        require("dap-go").debug_last()
+      end, { desc = "Debug Last Go Last" })
+    end,
+  },
+
+  {
+    "mfussenegger/nvim-lint",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      local lint = require("lint")
+
+      lint.linters.golangci_lint = {
+        cmd = "golangci-lint",
+        args = { "run", "--out-format", "json" },
+        stream = "stdout",
+        ignore_exitcode = true,
+        parser = function(output)
+          local diagnostics = {}
+
+          local ok, decoded = pcall(vim.fn.json_decode, output)
+          if not ok or not decoded or not decoded.Issues then
+            return diagnostics
+          end
+
+          for _, issue in ipairs(decoded.Issues) do
+            table.insert(diagnostics, {
+              row = issue.Pos.Line,
+              col = issue.Pos.Column,
+              end_row = issue.Pos.Line,
+              end_col = issue.Pos.Column,
+              source = "golangci-lint",
+              message = issue.Text,
+              severity = vim.diagnostic.severity.WARN,
+            })
+          end
+
+          return diagnostics
+        end,
+      }
+
+      lint.linters_by_ft = {
+        go = { "golangci_lint" },
+      }
+
+      vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+        callback = function()
+          lint.try_lint()
+        end,
+      })
+    end,
+  },
+}
