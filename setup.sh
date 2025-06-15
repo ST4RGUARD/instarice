@@ -79,18 +79,3 @@ if [[ "$OS" == "mac" && "$PACKAGE_MANAGER" == "brew" ]]; then
   echo 'export PATH="'"$RUBY_PATH"':$PATH"' >> ~/.zshrc
   source ~/.zshrc
 fi
-
-# Download main Ruby script
-print_header "downloading instarice ruby"
-
-REPO_URL="https://github.com/ST4RGUARD/instarice.git"
-TARGET_DIR="instarice-setup"
-
-if [ -d "$TARGET_DIR" ]; then
-  echo "Directory $TARGET_DIR already exists. Pulling latest changes..."
-  cd "$TARGET_DIR"
-  git pull
-else
-  git clone "$REPO_URL" "$TARGET_DIR"
-  cd "$TARGET_DIR"
-fi
