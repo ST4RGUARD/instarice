@@ -118,7 +118,7 @@ LANG_TOOL = {
   go: "go"
 }
 
-def install_lang_tool(name, os, pkg_manager)
+def install_lang_pkg(name, os, pkg_manager)
   case name
   when :ruby
     os == "mac" ? system("brew install frum") : system(
@@ -133,32 +133,48 @@ def install_lang_tool(name, os, pkg_manager)
   end
 end
 
-# -- install nvim language tools/gems/modules here --
-# -- python
-system("rye tools install debugpy black")
-# -- ruby
-system("gem install seeing_is_believing")
-# -- golang
-system("go install github.com/incu6us/goimports-reviser/v3@latest")
-system("go install mvdan.cc/gofumpt@latest")
-system("go install github.com/segmentio/golines@latest")
-system("go install github.com/go-delve/delve/cmd/dlv@latest")
+lang_tools = []
 
 if ask_yes_no("Do you want to install all languages from lang.yml?")
   YAML.load_file("lang.yml").each do |lang|
     lang_sym = lang.strip.downcase.to_sym
-    install_lang_tool(lang_sym, os, pkg_manager)
+    install_lang_pkg(lang_sym, os, pkg_manager)
+    lang_tools << lang.downcase
   end
 else
   YAML.load_file("lang.yml").each do |lang|
     lang_sym = lang.strip.downcase.to_sym
-    install_lang_tool(lang_sym, os, pkg_manager) if ask_yes_no("Install #{lang_sym}?")
+    install_lang_pkg(lang_sym, os, pkg_manager) if ask_yes_no("Install #{lang_sym}?")
+    lang_tools << lang.downcase
   end
 end
 
 # ---------- Source ZSH ----------
 header("💡 Sourcing .zshrc")
 execute("source #{HOME}/.zshrc")
+
+# ---------- Language Tools ------
+
+# -- python
+if lang_tools.include?("python")
+  system("rye tools install debugpy black")
+end
+# -- ruby
+if lang_tools.include?("ruby")
+  FileUtils.mkdir_p("#{HOME}/.config/seeing_is_believing")
+  SIB_DIR = "$HOME/.config/seeing_is_believing"
+  system("git clone https://github.com/JoshCheek/seeing_is_believing.git \"$SIB_DIR\"")
+  system("cd \"$SIB_DIR\"")
+  system("gem build seeing_is_believing.gemspec")
+  system("gem install seeing_is_believing-*.gem")
+end
+# -- golang
+if lang_tools.include?("go")
+  system("go install github.com/incu6us/goimports-reviser/v3@latest")
+  system("go install mvdan.cc/gofumpt@latest")
+  system("go install github.com/segmentio/golines@latest")
+  system("go install github.com/go-delve/delve/cmd/dlv@latest")
+end
 
 # ---------- Cleanup ----------
 header("🧹 Final Check and Cleanup Option")
