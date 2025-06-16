@@ -70,7 +70,7 @@ else
   esac
 fi
 
-# Fix permissions 
+# Fix permissions
 sudo chown -R "$USER":staff "$HOME/.zshrc" 2>/dev/null
 
 # Add ruby to PATH for Homebrew (macOS specific fix)
@@ -89,11 +89,9 @@ if [[ "$OS" == "mac" && "$PACKAGE_MANAGER" == "brew" ]]; then
     else
       echo "Ruby path already in $SHELL_PROFILE"
     fi
-
   else
     echo "Ruby is already in the correct PATH location: $(command -v ruby)"
   fi
-
 fi
 
 if [[ "$OS" == "mac" ]]; then
@@ -101,4 +99,3 @@ if [[ "$OS" == "mac" ]]; then
 else
   ruby instarice.rb linux
 fi
-
