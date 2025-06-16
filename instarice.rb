@@ -64,7 +64,7 @@ FileUtils.mkdir_p("#{HOME}/.config/ghostty")
 # Copy to ~/.config
 FileUtils.cp_r("nvim", "#{HOME}/.config/", verbose: true) if Dir.exist?("nvim")
 FileUtils.cp_r("config/starship.toml", "#{HOME}/.config/", verbose: true) if File.exist?("config/starship.toml")
-FileUtils.cp("config/ghostty_config", "#{HOME}/.config/ghostty/config", verbose: true) if File.exist?("ghostty_config")
+FileUtils.cp("config/ghostty_config", "#{HOME}/.config/ghostty/config", verbose: true) if File.exist?("config/ghostty_config")
 
 header("📦 App Installation")
 
@@ -150,23 +150,29 @@ else
 end
 
 # ---------- Source ZSH ----------
-header("💡 Sourcing .zshrc")
-execute("source #{HOME}/.zshrc")
+header("💡 If you installed rye - please run rye in your terminal to install")
+zshrc = "#{HOME}/.zshrc"
+line = 'source "$HOME/.rye/env"'
+unless File.readlines(zshrc).any? { |l| l.strip == line }
+  File.open(zshrc, "a") { |f| f.puts line }
+end
+header("💡 Please restart your terminal or run: source ~/.zshrc")
 
 # ---------- Language Tools ------
-
 # -- python
 if lang_tools.include?("python")
-  system("rye tools install debugpy black")
+  system("rye install debugpy")
+  system("rye install black")
 end
 # -- ruby
 if lang_tools.include?("ruby")
-  FileUtils.mkdir_p("#{HOME}/.config/seeing_is_believing")
-  SIB_DIR = "$HOME/.config/seeing_is_believing"
-  system("git clone https://github.com/JoshCheek/seeing_is_believing.git \"$SIB_DIR\"")
-  system("cd \"$SIB_DIR\"")
-  system("gem build seeing_is_believing.gemspec")
-  system("gem install seeing_is_believing-*.gem")
+  sib_dir = "#{HOME}/.config/seeing_is_believing"
+  FileUtils.mkdir_p(sib_dir)
+  system("git clone https://github.com/JoshCheek/seeing_is_believing.git '#{sib_dir}'")
+  Dir.chdir(sib_dir) do
+    system("gem build seeing_is_believing.gemspec")
+    system("gem install seeing_is_believing-*.gem")
+  end
 end
 # -- golang
 if lang_tools.include?("go")
