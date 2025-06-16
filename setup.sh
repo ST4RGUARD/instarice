@@ -85,7 +85,13 @@ if [[ "$OS" == "mac" && "$PACKAGE_MANAGER" == "brew" ]]; then
     if ! grep -q "$RUBY_PATH" "$SHELL_PROFILE"; then
       echo 'export PATH="'"$RUBY_PATH"':$PATH"' >> "$SHELL_PROFILE"
       echo "Ruby path added to $SHELL_PROFILE"
-      source "$SHELL_PROFILE"
+
+      if [[ "$SHELL" == */zsh ]]; then
+        echo "Please run: source $SHELL_PROFILE or restart your terminal to apply changes - run sh setup.sh again"
+      else
+        echo "Detected shell is not Zsh. Please open a new terminal session to apply PATH changes."
+      fi
+
     else
       echo "Ruby path already in $SHELL_PROFILE"
     fi
