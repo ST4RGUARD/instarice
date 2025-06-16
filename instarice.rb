@@ -378,6 +378,7 @@ puts(
       :Lazy sync
       :Lazy update
       :Lazy install
+      :Mason update
       :Mason install
 
     Happy hacking! ⚡
