@@ -32,7 +32,6 @@ return {
                 "denols",
                 "jsonls",
                 "pyright",
-                "ruff_lsp",
                 "rust_analyzer",
                 "emmet_ls",
                 "marksman",
