@@ -33,7 +33,7 @@ unless %w[mac linux].include?(os)
   exit(1)
 end
 
-header("🧼 Cleaning up old config files")
+header("Cleaning up old config files")
 HOME = Dir.home
 
 paths_to_remove = [
@@ -50,7 +50,7 @@ paths_to_remove.each do |path|
   log("Removed: #{path}")
 end
 
-header("📁 Copying config files")
+header("Copying config files")
 
 current_user = `whoami`.strip
 
@@ -103,7 +103,7 @@ end
 
 FileUtils.cp_r("themes", "#{HOME}/.config/ghostty", verbose: true) if Dir.exist?("themes")
 
-header("📦 App Installation")
+header("App Installation")
 
 # ---------- Package Manager Detection ----------
 def find_package_manager
@@ -146,7 +146,7 @@ if ask_yes_no("Do you want to install all apps from apps.yml?")
 end
 
 # ---------- Language Installation ----------
-header("💻 Language Setup")
+header("Language Setup")
 
 LANG_TOOL = {
   ruby: "frum",
@@ -187,14 +187,14 @@ else
 end
 
 # ---------- Source ZSH ----------
-header("💡 If you installed rye - please run rye in your terminal to install")
+header("If you installed rye - please run rye in your terminal to install")
 zshrc = "#{HOME}/.zshrc"
 line = "source \"$HOME/.rye/env\""
 unless File.readlines(zshrc).any? { |l| l.strip == line }
   File.open(zshrc, "a") { |f| f.puts(line) }
 end
 
-header("💡 Please restart your terminal or run: source ~/.zshrc")
+header("Please restart your terminal or run: source ~/.zshrc")
 
 # ---------- Language Tools ------
 # -- python
@@ -234,7 +234,7 @@ files_to_check = [
 
 missing = files_to_check.reject { |f| File.exist?(f) }
 if missing.empty?
-  log("✅ All config files found!")
+  log("All config files found!")
   if ask_yes_no("Do you want to clean up and uninstall temporary Ruby?")
     case os
     when "mac"
@@ -244,7 +244,7 @@ if missing.empty?
     end
 
     FileUtils.rm_rf(Dir.pwd)
-    log("Cleanup complete! ✨")
+    log("Cleanup complete!")
   else
     log("Skipping cleanup.")
   end
@@ -257,15 +257,15 @@ end
 puts(
   <<~EOF
 
-    🎉 Setup is complete!
+    Setup is complete!
 
-    🚀 Run the following inside Neovim:
+    Run the following inside Neovim:
       :Lazy sync
       :Lazy update
       :Lazy install
       :Mason install
 
-    Happy hacking! 💻⚡
+    Happy hacking! ⚡
 
   EOF
 )
