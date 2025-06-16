@@ -26,8 +26,6 @@ instarice will first remove existing ~/.zshrc, ~/.vimrc, ~/.vim/, ~/.config/nvim
 
 instarice will ask to install all languages - all supported lang in lang.yml in this repo
 
-if yes - instarice will begin setup of devenv for mac or linux system installing ghostty terminal, language envs and neovim
-
-- this will include neceassary gems, modules, etc
+if yes - instarice will begin setup of devenv for mac or linux system installing apps in apps.yml currently [neovim,vim,ghostty,starship]
 
 if no - instarice will begin asking 1 by 1 which language to install
