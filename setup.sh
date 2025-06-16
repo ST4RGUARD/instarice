@@ -77,6 +77,15 @@ else
   esac
 fi
 
+# Ensure coreutils (gmkdir) is installed - needed for native gem builds like prism
+print_header "Ensuring coreutils is installed (for gmkdir)"
+if ! command -v gmkdir &> /dev/null; then
+  echo "Installing coreutils..."
+  $PACKAGE_MANAGER install coreutils
+else
+  echo "coreutils already installed"
+fi
+
 # Ensure .zshrc exists and set permissions
 SHELL_PROFILE="$HOME/.zshrc"
 if [[ ! -f "$SHELL_PROFILE" ]]; then
