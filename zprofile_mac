@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+autoload -U colors && colors
+alias kali="ssh #{user}@192.168.111.128"
+alias per="cd /Users/#{user}/Perforce/nilRemote"
+alias p4v="sh /usr/local/bin/p4v.sh"
+alias dpull="docker pull docker-local-atijenkins.artifactory.it.keysight.com/chroot_image_ati-unstable_apple_silicon_mac:latest"
+alias denv="docker start -ai nilremote-devenv-run-2f0d50a50961"
+export RUBYLIB="/Volumes/MHD/Users/#{user}/Perforce/nilRemote/ati-unstable/tests/bpsruby/lib"
+export SEC_WORKING_DIR=/Volumes/MHD/Users/#{user}/Perforce/nilRemote/ati-unstable/
+export TOOLS="/Volumes/MHD/Users/#{user}/Perforce/nilRemote/tools/security/scripts"
+export GOROOT=/usr/local/go 
+export GOPATH="/Users/#{user}/git/sec_scripts/go"
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH 
+export P4_BRANCH=ati-unstable
+export P4_WORKSPACE=/Users/#{user}/Perforce/nilRemote/
+export GIT_WORKSPACE=/Users/#{user}/bitbucket
+#export RUBY_CONFIG_OPTIONS="--with-openssl-dir=$(brew --prefix openssl@3)"
+#export CPATH="$(brew --prefix)/include"
+#export LIBRARY_PATH=$(brew --prefix)/lib
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+# enable frum
+eval "$(frum init)"
+
+export PATH="/opt/homebrew/bin:$HOME/.cargo/env:$HOME/.rye/shims:/bin:/usr/bin:$HOME:/.elan/bin:$PATH"
+source "$HOME/.rye/env"

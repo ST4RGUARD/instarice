@@ -1,0 +1,14 @@
+
+if [ -f ~/.zprofile ]; then
+  . ~/.zprofile
+fi
+
+# enable frum
+eval "$(frum init)"
+
+HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
+HISTSIZE=99999
+HISTFILESIZE=999999
+SAVEHIST=$HISTSIZE
+
+eval "$(starship init zsh)"
