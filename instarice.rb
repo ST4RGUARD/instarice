@@ -103,6 +103,69 @@ end
 
 FileUtils.cp_r("themes", "#{HOME}/.config/ghostty", verbose: true) if Dir.exist?("themes")
 
+# ---------- Ascii Image Converter ----------
+header("Installing ascii-image-converter and copying image")
+
+def install_ascii_image_converter(os)
+  if os == "mac"
+    log("Installing ascii-image-converter via Homebrew...")
+    system("brew install TheZoraiz/ascii-image-converter/ascii-image-converter")
+  elsif os == "linux"
+    log("Downloading ascii-image-converter for Linux...")
+    require "open-uri"
+    require "json"
+
+    api_url = "https://api.github.com/repos/TheZoraiz/ascii-image-converter/releases/latest"
+    latest_release = JSON.parse(URI.open(api_url).read)
+    asset = latest_release["assets"].find { |a|
+      a["name"].include?("ascii-image-converter") && a["name"].end_with?(".tar.gz")
+    }
+
+    unless asset
+      error("Could not find suitable binary in latest release.")
+      return
+    end
+
+    download_url = asset["browser_download_url"]
+    temp_dir = Dir.mktmpdir
+    tar_file = File.join(temp_dir, "ascii-image-converter.tar.gz")
+
+    log("Downloading from: #{download_url}")
+    URI.open(download_url) do |download|
+      File.open(tar_file, "wb") { |f| f.write(download.read) }
+    end
+
+    Dir.chdir(temp_dir) do
+      system("tar -xzf #{tar_file}")
+      binary_path = Dir["ascii-image-converter*"].find { |f| File.executable?(f) && !File.directory?(f) }
+      if binary_path
+        log("Copying #{binary_path} to /usr/local/bin (requires sudo)")
+        system("sudo cp #{binary_path} /usr/local/bin/")
+      else
+        error("Could not find extracted binary to install.")
+      end
+    end
+  end
+end
+
+def copy_image
+  source_image = File.join(Dir.pwd, "beyonder.jpg")
+  target_dir = File.join(Dir.home, "Pictures")
+  target_path = File.join(target_dir, "beyonder.jpg")
+
+  unless File.exist?(source_image)
+    error("Image file 'beyonder.jpg' not found in current directory.")
+    return
+  end
+
+  FileUtils.mkdir_p(target_dir)
+  FileUtils.cp(source_image, target_path)
+  log("Copied image to: #{target_path}")
+end
+
+install_ascii_image_converter(os)
+copy_image
+
 header("App Installation")
 
 # ---------- Package Manager Detection ----------
