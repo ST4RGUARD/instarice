@@ -319,6 +319,9 @@ if lang_tools.include?("ruby")
   sib_dir = "#{HOME}/.config/seeing_is_believing"
   FileUtils.mkdir_p(sib_dir)
   system("git clone https://github.com/JoshCheek/seeing_is_believing.git '#{sib_dir}'")
+  frum_ruby_bin = File.expand_path("~/.frum/versions/3.4.4/bin/")
+  ENV["PATH"] = "#{frum_ruby_bin}:#{ENV["PATH"]}"
+
   Dir.chdir(sib_dir) do
     system("gem build seeing_is_believing.gemspec")
     system("gem install seeing_is_believing-*.gem")
