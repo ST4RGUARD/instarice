@@ -52,7 +52,7 @@ end
 
 header("Copying config files")
 
-current_user = `whoami`.strip
+current_user = "nil" || `whoami`.strip
 
 # Shell config: mac gets special files, linux uses regular .zshrc
 if os == "mac"
@@ -93,6 +93,10 @@ end
 FileUtils.mkdir_p("#{HOME}/.config")
 FileUtils.mkdir_p("#{HOME}/.config/ghostty")
 FileUtils.mkdir_p("#{HOME}/.config/ghostty/themes")
+
+# Go setup
+FileUtils.mkdir_p("~/go")
+system("chmod -R u+rwX \"$GOPATH\"")
 
 # Copy to ~/.config
 FileUtils.cp_r("nvim", "#{HOME}/.config/", verbose: true) if Dir.exist?("nvim")
@@ -215,21 +219,66 @@ LANG_TOOL = {
   ruby: "frum",
   python: "rye",
   rust: "rustup",
-  go: "go"
+  go: "go",
+  node: "node"
 }
+
+def install_openssl_for_ruby(os, pkg_manager)
+  log("Checking for OpenSSL...")
+
+  if os == "mac"
+    unless system("brew list openssl@3 > /dev/null 2>&1")
+      log("Installing OpenSSL via Homebrew...")
+      system("brew install openssl@3")
+    end
+
+    `brew --prefix openssl@3`.strip
+  elsif os == "linux"
+    if pkg_manager == "apt"
+      unless system("dpkg -s libssl-dev > /dev/null 2>&1")
+        log("Installing OpenSSL via APT...")
+        system("sudo apt update && sudo apt install -y libssl-dev")
+      end
+    elsif pkg_manager == "pacman"
+      unless system("pacman -Qi openssl > /dev/null 2>&1")
+        log("Installing OpenSSL via Pacman...")
+        system("sudo pacman -Syu --noconfirm openssl")
+      end
+    else
+      error("Unsupported Linux package manager for OpenSSL install.")
+      return nil
+    end
+
+    "/usr"
+  else
+    error("Unsupported OS for OpenSSL setup.")
+    nil
+  end
+end
 
 def install_lang_pkg(name, os, pkg_manager)
   case name
   when :ruby
-    os == "mac" ? system("brew install frum") : system(
-      "#{pkg_manager} install -y curl && curl https://frum.sh/install | bash"
-    )
+    log("Installing Ruby with frum...")
+    openssl_dir = install_openssl_for_ruby(os, pkg_manager)
+
+    if openssl_dir
+      cmd = "RUBY_CONFIGURE_OPTS=\"--with-openssl-dir=#{openssl_dir}\" frum install 3.4"
+      log("Running: #{cmd}")
+      system(cmd)
+      system("frum global 3.4")
+    else
+      error("Could not determine OpenSSL location. Skipping Ruby install.")
+    end
+
   when :python
     os == "mac" ? system("brew install rye") : system("curl -sSf https://rye-up.com/get | bash")
   when :rust
     system("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y")
   when :go
     os == "mac" ? system("brew install go") : system("#{pkg_manager} install -y golang")
+  when :node
+    os == "mac" ? system("brew install node") : system("#{pkg_manager} install -y nodejs npm")
   end
 end
 
