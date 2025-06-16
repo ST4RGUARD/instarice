@@ -73,7 +73,8 @@ if os == "mac"
     error("Missing zprofile_mac file!")
   end
 
-else  # linux
+  # linux
+else
   log("Detected Linux. Copying standard .zshrc")
   if File.exist?(".zshrc")
     FileUtils.cp(".zshrc", "#{HOME}/.zshrc", verbose: true)
@@ -88,15 +89,19 @@ end
   FileUtils.cp_r(item, "#{HOME}/", verbose: true) if File.exist?(item)
 end
 
-
 # Ensure ~/.config & ~/.config/ghostty exist
 FileUtils.mkdir_p("#{HOME}/.config")
 FileUtils.mkdir_p("#{HOME}/.config/ghostty")
+FileUtils.mkdir_p("#{HOME}/.config/ghostty/themes")
 
 # Copy to ~/.config
 FileUtils.cp_r("nvim", "#{HOME}/.config/", verbose: true) if Dir.exist?("nvim")
 FileUtils.cp_r("config/starship.toml", "#{HOME}/.config/", verbose: true) if File.exist?("config/starship.toml")
-FileUtils.cp("config/ghostty_config", "#{HOME}/.config/ghostty/config", verbose: true) if File.exist?("config/ghostty_config")
+if File.exist?("config/ghostty_config")
+  FileUtils.cp("config/ghostty_config", "#{HOME}/.config/ghostty/config", verbose: true)
+end
+
+FileUtils.cp_r("themes", "#{HOME}/.config/ghostty", verbose: true) if Dir.exist?("themes")
 
 header("📦 App Installation")
 
@@ -184,10 +189,11 @@ end
 # ---------- Source ZSH ----------
 header("💡 If you installed rye - please run rye in your terminal to install")
 zshrc = "#{HOME}/.zshrc"
-line = 'source "$HOME/.rye/env"'
+line = "source \"$HOME/.rye/env\""
 unless File.readlines(zshrc).any? { |l| l.strip == line }
-  File.open(zshrc, "a") { |f| f.puts line }
+  File.open(zshrc, "a") { |f| f.puts(line) }
 end
+
 header("💡 Please restart your terminal or run: source ~/.zshrc")
 
 # ---------- Language Tools ------
