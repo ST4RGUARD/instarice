@@ -92,7 +92,7 @@ return {
           { section = "startup" },
           {
             section = "terminal",
-            cmd = "ascii-image-converter /home/nilclass/Pictures/beyonder.jpg -C",
+            cmd = "ascii-image-converter ~/Pictures/beyonder.jpg -C",
             random = 10,
             pane = 2,
             indent = 4,
