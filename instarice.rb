@@ -52,7 +52,7 @@ end
 
 header("Copying config files")
 
-current_user = "nil" || `whoami`.strip
+current_user = `whoami`.strip
 
 # Shell config: mac gets special files, linux uses regular .zshrc
 if os == "mac"
