@@ -72,7 +72,7 @@ else
 fi
 
 # Fix permissions 
-sudo chown -R "$USER":staff "$HOME/.irbrc" $HOME/.zshrc" "$HOME/.vimrc" "$HOME/.vim" "$HOME/.config" 2>/dev/null
+sudo chown -R "$USER":staff "$HOME/.irbrc" "$HOME/.zshrc" "$HOME/.vimrc" "$HOME/.vim" "$HOME/.config" 2>/dev/null
 
 # Add ruby to PATH for Homebrew (macOS specific fix)
 if [[ "$OS" == "mac" && "$PACKAGE_MANAGER" == "brew" ]]; then
@@ -90,12 +90,11 @@ if [[ "$OS" == "mac" && "$PACKAGE_MANAGER" == "brew" ]]; then
       echo "Ruby path already in $SHELL_PROFILE"
     fi
 
-    echo 'here'
   else
     echo "Ruby is already in the correct PATH location: $(command -v ruby)"
 
   source "$SHELL_PROFILE"
-	fi
+  fi
 fi
 
 if [[ "$OS" == "mac" ]]; then
