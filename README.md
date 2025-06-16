@@ -24,7 +24,7 @@ instarice will determine package manager
 
 instarice will first remove existing ~/.zshrc, ~/.vimrc, ~/.vim/, ~/.config/nvim/, and ~/.config/ghostty/config
 
-instarice will begin setup of devenv for mac or linux systemm
+instarice will begin setup of devenv for mac or linux system
   - it will copy over config files
   - it will ask to install all apps in apps.yml currently [neovim,vim,ghostty,starship]
   - if no it will ask to install 1 by 1
