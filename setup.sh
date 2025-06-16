@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+
 # Function to print headers
 print_header() {
   echo
@@ -34,9 +35,15 @@ elif command -v pacman &>/dev/null; then
   PACKAGE_MANAGER="pacman"
 else
   if [[ "$OS" == "mac" ]]; then
-    echo "Homebrew not found. Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    PACKAGE_MANAGER="brew"
+  echo "Homebrew not found. Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  # <<< Add this block here >>>
+  if [[ "$OS" == "mac" && -x /opt/homebrew/bin/brew ]]; then
+    echo 'Adding Homebrew to PATH...'
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  fi
+  PACKAGE_MANAGER="brew"
   else
     echo "No package manager found (brew, apt, pacman). Please install one manually."
     exit 1
@@ -70,10 +77,15 @@ else
   esac
 fi
 
-# Fix permissions
-sudo chown -R "$USER":staff "$HOME/.zshrc" 2>/dev/null
+# Ensure .zshrc exists and set permissions
+SHELL_PROFILE="$HOME/.zshrc"
+if [[ ! -f "$SHELL_PROFILE" ]]; then
+  echo "Creating $SHELL_PROFILE"
+  touch "$SHELL_PROFILE"
+fi
+sudo chown "$USER":staff "$SHELL_PROFILE"
 
-# Add ruby to PATH for Homebrew (macOS specific fix)
+# Add Ruby to PATH for Homebrew (macOS specific fix)
 if [[ "$OS" == "mac" && "$PACKAGE_MANAGER" == "brew" ]]; then
   RUBY_PATH="$(brew --prefix ruby)/bin"
 
@@ -81,25 +93,30 @@ if [[ "$OS" == "mac" && "$PACKAGE_MANAGER" == "brew" ]]; then
     echo "Adding Ruby to PATH: $RUBY_PATH"
     export PATH="$RUBY_PATH:$PATH"
 
-    SHELL_PROFILE="$HOME/.zshrc"
     if ! grep -q "$RUBY_PATH" "$SHELL_PROFILE"; then
       echo 'export PATH="'"$RUBY_PATH"':$PATH"' >> "$SHELL_PROFILE"
       echo "Ruby path added to $SHELL_PROFILE"
-
-      if [[ "$SHELL" == */zsh ]]; then
-        echo "Please run: source $SHELL_PROFILE or restart your terminal to apply changes - run sh setup.sh again"
-      else
-        echo "Detected shell is not Zsh. Please open a new terminal session to apply PATH changes."
-      fi
-
     else
-      echo "Ruby path already in $SHELL_PROFILE"
+      echo "Ruby path already present in $SHELL_PROFILE"
     fi
   else
     echo "Ruby is already in the correct PATH location: $(command -v ruby)"
   fi
 fi
 
+# Suggest shell refresh
+echo
+echo "==== Setup Complete ===="
+if [[ "$SHELL" == */zsh ]]; then
+  echo "To apply changes now, run:"
+  echo "  source ~/.zshrc && hash -r"
+  echo "Or restart your terminal."
+else
+  echo "Non-Zsh shell detected. Restart your terminal or source the appropriate profile to apply changes."
+fi
+
+# Run Ruby script
+print_header "Running instarice.rb"
 if [[ "$OS" == "mac" ]]; then
   ruby instarice.rb mac
 else
