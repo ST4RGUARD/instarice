@@ -322,6 +322,13 @@ if lang_tools.include?("ruby")
   frum_ruby_bin = File.expand_path("~/.frum/versions/3.4.4/bin/")
   ENV["PATH"] = "#{frum_ruby_bin}:#{ENV["PATH"]}"
 
+  # Install gems
+  gems = ["interactive_editor"]
+  gems.each do |gem|
+    log("Installing Ruby gem: #{gem}")
+    system("gem install #{gem}")
+  end
+
   Dir.chdir(sib_dir) do
     system("gem build seeing_is_believing.gemspec")
     system("gem install seeing_is_believing-*.gem")
