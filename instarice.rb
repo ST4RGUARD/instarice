@@ -263,10 +263,10 @@ def install_lang_pkg(name, os, pkg_manager)
     openssl_dir = install_openssl_for_ruby(os, pkg_manager)
 
     if openssl_dir
-      cmd = "RUBY_CONFIGURE_OPTS=\"--with-openssl-dir=#{openssl_dir}\" frum install 3.4"
+      cmd = "RUBY_CONFIGURE_OPTS=\"--with-openssl-dir=#{openssl_dir}\" frum install 3.4.4"
       log("Running: #{cmd}")
       system(cmd)
-      system("frum global 3.4")
+      system("frum global 3.4.4")
     else
       error("Could not determine OpenSSL location. Skipping Ruby install.")
     end

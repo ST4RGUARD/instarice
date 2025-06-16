@@ -22,5 +22,5 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # enable frum
 eval "$(frum init)"
 
-export PATH="/opt/homebrew/bin:$HOME/.cargo/env:$HOME/.rye/shims:/bin:/usr/bin:$HOME:/.elan/bin:$PATH"
+export PATH="$HOME/.frum/versions/3.4.4/bin:/opt/homebrew/bin:$HOME/.cargo/env:$HOME/.rye/shims:/bin:/usr/bin:$HOME:/.elan/bin:$PATH"
 source "$HOME/.rye/env"
