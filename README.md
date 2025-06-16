@@ -26,11 +26,13 @@ instarice will first remove existing ~/.zshrc, ~/.vimrc, ~/.vim/, ~/.config/nvim
 
 instarice will begin setup of devenv for mac or linux system
   - it will copy over config files
-  - it will ask to install all apps in apps.yml currently [neovim,vim,ghostty,starship]
+  - it will ask to install all apps in apps.yml
+    - default - [neovim,vim,ghostty,starship,lazygit]
   - if no it will ask to install 1 by 1
 
-instarice will ask to install all languages - all supported lang in lang.yml in this repo
+instarice will ask to install all languages - declared in lang.yml
   - if yes it will begin installing all languages
+    - default - [ruby,python,node,rust,go]  
   - if no instarice will begin asking 1 by 1 which language to install
   - it will then instll gems/modules/packages each languages needs for debugging linting etc (neovim)
 
