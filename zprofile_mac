@@ -8,6 +8,7 @@ export RUBYLIB="/Volumes/meep/Users/#{user}/Perforce/nilRemote/ati-unstable/test
 export SEC_WORKING_DIR=/Volumes/meep/Users/#{user}/Perforce/nilRemote/ati-unstable/
 export TOOLS="/Volumes/meep/Users/#{user}/Perforce/nilRemote/tools/security/scripts"
 export GOPATH="/Users/#{user}/go"
+export PATH="$HOME/go/bin:$PATH"
 export GOPROXY="https://proxy.golang.org,direct"
 export GOSUMDB="sum.golang.org"
 export P4_BRANCH=ati-unstable
