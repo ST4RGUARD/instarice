@@ -52,10 +52,42 @@ end
 
 header("📁 Copying config files")
 
-# Copying to ~/
-%w[.irbrc .zshrc .vimrc .vim].each do |item|
+current_user = `whoami`.strip
+
+# Shell config: mac gets special files, linux uses regular .zshrc
+if os == "mac"
+  log("Detected macOS. Using mac-specific zsh config files.")
+
+  if File.exist?("zshrc_mac")
+    FileUtils.cp("zshrc_mac", "#{HOME}/.zshrc", verbose: true)
+    log("Copied zshrc_mac → ~/.zshrc")
+  else
+    error("Missing zshrc_mac file!")
+  end
+
+  if File.exist?("zprofile_mac")
+    content = File.read("zprofile_mac").gsub("\#{user}", current_user)
+    File.write("#{HOME}/.zprofile", content)
+    log("Copied zprofile_mac → ~/.zprofile with user substitution")
+  else
+    error("Missing zprofile_mac file!")
+  end
+
+else  # linux
+  log("Detected Linux. Copying standard .zshrc")
+  if File.exist?(".zshrc")
+    FileUtils.cp(".zshrc", "#{HOME}/.zshrc", verbose: true)
+    log("Copied .zshrc → ~/.zshrc")
+  else
+    error("Missing .zshrc file!")
+  end
+end
+
+# Copy to ~/
+%w[.irbrc .vimrc .vim].each do |item|
   FileUtils.cp_r(item, "#{HOME}/", verbose: true) if File.exist?(item)
 end
+
 
 # Ensure ~/.config & ~/.config/ghostty exist
 FileUtils.mkdir_p("#{HOME}/.config")
