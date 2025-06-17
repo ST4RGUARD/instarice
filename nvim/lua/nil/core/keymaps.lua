@@ -18,9 +18,10 @@ vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><
 
 -- split
 vim.keymap.set("n", "<leader>sv", "<C-w>v", { desc = "split window vertically" })
-vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "split window vertically" })
+vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "split window horizontally" })
 vim.keymap.set("n", "<leader>se", "<C-w>=", { desc = "split window equally" })
 vim.keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "close split" })
+vim.keymap.set('n', '<leader>shr', ':resize 30<CR>', { desc = 'Resize horizontal split to 30 lines' })
 
 -- jump between windows
 vim.keymap.set("n", "<C-h>", "<C-w>h")
