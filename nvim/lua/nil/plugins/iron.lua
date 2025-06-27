@@ -34,10 +34,24 @@ return {
     -- Helper to send code lines to the appropriate REPL
     local function send_code_lines(ft, lines)
       local dedented = dedent_lines(lines)
+
+      -- Filter out blank lines completely
+      local non_blank_lines = {}
+      for _, line in ipairs(dedented) do
+        if line:match("%S") then -- Line contains non-whitespace
+          table.insert(non_blank_lines, line)
+        end
+      end
+
+      if #non_blank_lines == 0 then
+        print("No non-blank lines to send to REPL")
+        return
+      end
+
       if ft == "markdown" then
-        iron.send("python", dedented)
+        iron.send("python", non_blank_lines)
       else
-        iron.send(ft, dedented)
+        iron.send(ft, non_blank_lines)
       end
     end
 
@@ -45,13 +59,13 @@ return {
       config = {
         repl_definition = {
           python = {
-            command = { "rye", "run", "ipython", "--no-banner", "--no-autoindent"}
+            command = { "rye", "run", "ipython", "--no-banner", "--no-autoindent" }
           },
           preferred = {
             python = "python",
           },
         },
-        repl_open_cmd = "vertical botright 80 split",
+        repl_open_cmd = "vertical botright 50 split",
       },
       keymaps = {
         send_motion = "<leader>sc",
