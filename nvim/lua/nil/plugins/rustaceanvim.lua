@@ -31,5 +31,31 @@ return {
         adapter = cfg.get_codelldb_adapter(codelldb_path, liblldb_path),
       },
     }
+
+    local function cargo_run_in_project_root()
+      -- Get project root by searching Cargo.toml upwards
+      local cwd = vim.fn.getcwd()
+      local cargo_root = vim.fn.findfile("Cargo.toml", cwd .. ";")
+      if cargo_root == "" then
+        print("Cargo.toml not found in parent directories")
+        return
+      end
+      local root_dir = vim.fn.fnamemodify(cargo_root, ":h")
+
+      -- Open vertical split terminal in root dir and run cargo run
+      vim.cmd('vsplit')
+      vim.cmd('terminal')
+      -- Change directory to root_dir
+      vim.api.nvim_chan_send(vim.b.terminal_job_id, "cd " .. root_dir .. "\n")
+      -- Run cargo run
+      vim.api.nvim_chan_send(vim.b.terminal_job_id, "cargo run\n")
+    end
+
+    vim.api.nvim_set_keymap('n', '<leader>cr', '', {
+      noremap = true,
+      silent = true,
+      callback = cargo_run_in_project_root,
+      desc = "Cargo run in project root",
+    })
   end,
 }
