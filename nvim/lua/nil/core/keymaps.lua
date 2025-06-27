@@ -44,3 +44,34 @@ end
 
 -- Keybinding: Change <leader>d to your preferred key combo
 vim.keymap.set('n', '<leader>dX', ToggleDiagnostics, { noremap = true, silent = true, desc = "Toggle diagnostics" })
+
+
+-- Keybinding for Converting Opened .ipynb Jupyter Notebook to Python with jupytext
+vim.keymap.set("n", "<leader>jc", function()
+  local input = vim.fn.expand("%:p")            -- full path to current file
+  local ext = vim.fn.expand("%:e")              -- file extension
+
+  if ext ~= "ipynb" then
+    vim.notify("Not a .ipynb file", vim.log.levels.WARN)
+    return
+  end
+
+  -- Create output filename by changing extension
+  local output = vim.fn.expand("%:r") .. ".py"
+
+  -- Construct command
+  local cmd = string.format("jupytext --to py:percent --opt comment_magics=false %s -o %s", input, output)
+
+  -- Run it and notify
+  vim.fn.jobstart(cmd, {
+    on_exit = function(_, code)
+      if code == 0 then
+        vim.notify("Converted to " .. output, vim.log.levels.INFO)
+        vim.cmd("edit " .. output)
+      else
+        vim.notify("Conversion failed", vim.log.levels.ERROR)
+      end
+    end
+  })
+end, { desc = "Convert .ipynb to .py with # %%", silent = true })
+

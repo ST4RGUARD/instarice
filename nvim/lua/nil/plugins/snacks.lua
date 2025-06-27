@@ -75,7 +75,7 @@ return {
               title = " {title} {live} {flags} ",
               title_pos = "left",
               { win = "input", height = 1, border = "bottom" },
-              { 
+              {
                 box = "horizontal",
                 { win = "list", border = "none" },
                 { win = "preview", title = "{preview}", width = 0.5, border = "left" },
@@ -83,6 +83,23 @@ return {
           },
         },
         }
+      },
+      image = {
+        enabled = true,
+        doc = {
+          float = false,
+          inline = true,
+          max_width = 50,
+          max_height = 30,
+          wo = {
+            wrap = true,
+          },
+        },
+        convert = {
+          notify = true,
+          command = "magick"
+        },
+        img_dirs = { "/Users/jarjohns/Pictures"}
       },
       dashboard = {
         enabled = true,
@@ -110,6 +127,8 @@ return {
 
       -- snacks picker
       { "<leader>pf", function() require("snacks").picker.files() end, desc = "Find Files" },
+      { "<leader>ps", function() require("snacks").picker.grep() end, desc = "Grep Word" },
+      { "<leader>pws", function() require("snacks").picker.grep_word() end, desc = "Grep Visual Selection, or Word", mode = { "n", "x"} },
       { "<leader>pk", function() require("snacks").picker.keymaps({ layout = "ivy" }) end, desc = "Searh Keymaps" },
 
       { "<leader>gbr", function() require("snacks").picker.git_branches({ layout = "select" }) end, desc = "Pick and Switch Git Branches" },

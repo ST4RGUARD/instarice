@@ -24,13 +24,13 @@ return {
 
             dir_path = function()
                 local cwd = vim.fn.getcwd()
-                local vault_name = "sethVault"  -- obsidian vault dir 
-                local vault_images_path = "Archives/All-Vault-Images/"
+                local vault_name = "/Users/jarjohns/Pictures/"
+                local vault_images_path = "nil"
 
                 if cwd:match(vault_name) then
                     return vault_images_path
                 else
-                    return "assets"
+                    return "/Users/jarjohns/Pictures/"
                 end
             end,
 
