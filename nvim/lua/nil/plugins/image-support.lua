@@ -24,13 +24,13 @@ return {
 
             dir_path = function()
                 local cwd = vim.fn.getcwd()
-                local vault_name = "/Users/jarjohns/Pictures/"
+                local vault_name = "Pictures"
                 local vault_images_path = "nil"
 
                 if cwd:match(vault_name) then
                     return vault_images_path
                 else
-                    return "/Users/jarjohns/Pictures/"
+                    return "assets"
                 end
             end,
 

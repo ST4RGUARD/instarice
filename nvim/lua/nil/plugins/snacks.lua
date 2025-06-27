@@ -99,7 +99,7 @@ return {
           notify = true,
           command = "magick"
         },
-        img_dirs = { "/Users/jarjohns/Pictures"}
+        img_dirs = { "assets"}
       },
       dashboard = {
         enabled = true,
