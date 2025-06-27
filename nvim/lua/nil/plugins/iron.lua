@@ -3,37 +3,73 @@ return {
   config = function()
     local iron = require("iron.core")
 
+    -- Dedent lines by removing minimal common indentation
+    local function dedent_lines(lines)
+      local min_indent = nil
+      for _, line in ipairs(lines) do
+        if line:match("%S") then
+          local leading = line:match("^(%s*)")
+          if not min_indent or #leading < min_indent then
+            min_indent = #leading
+          end
+        end
+      end
+
+      if not min_indent or min_indent == 0 then
+        return lines
+      end
+
+      local dedented = {}
+      for i, line in ipairs(lines) do
+        if #line >= min_indent then
+          dedented[i] = line:sub(min_indent + 1)
+        else
+          dedented[i] = line
+        end
+      end
+
+      return dedented
+    end
+
+    -- Helper to send code lines to the appropriate REPL
+    local function send_code_lines(ft, lines)
+      local dedented = dedent_lines(lines)
+      if ft == "markdown" then
+        iron.send("python", dedented)
+      else
+        iron.send(ft, dedented)
+      end
+    end
+
     iron.setup {
       config = {
-        -- Define REPL commands per filetype
         repl_definition = {
           python = {
-            command = { "ipython", "--no-banner" }
+            command = { "rye", "run", "ipython", "--no-banner", "--no-autoindent"}
           },
           preferred = {
             python = "python",
           },
-          -- add more if you want (like julia, R, etc)
         },
-        repl_open_cmd = "vertical botright 80 split", -- open REPL in vertical split
+        repl_open_cmd = "vertical botright 80 split",
       },
       keymaps = {
-        send_motion = "<leader>sc",     -- send motion/text
-        visual_send = "<leader>sc",     -- send visual selection
-        send_line = "<leader>sl",       -- send current line
-        send_file = "<leader>sf",       -- send whole file
-        send_mark = "<leader>sm",       -- send mark
-        mark_motion = "<leader>mc",     -- mark motion
-        mark_visual = "<leader>mc",     -- mark visual selection
-        remove_mark = "<leader>md",     -- remove mark
-        cr = "<leader>s<cr>",           -- send carriage return (enter)
-        interrupt = "<leader>s<space>", -- interrupt REPL
-        exit = "<leader>sq",            -- exit REPL
-        clear = "<leader>cl",           -- clear REPL buffer
+        send_motion = "<leader>sc",
+        -- visual_send is replaced by a custom keymap below
+        send_line = "<leader>sl",
+        send_file = "<leader>sf",
+        send_mark = "<leader>sm",
+        mark_motion = "<leader>mc",
+        mark_visual = "<leader>mc",
+        remove_mark = "<leader>md",
+        cr = "<leader>s<cr>",
+        interrupt = "<leader>s<space>",
+        exit = "<leader>sq",
+        clear = "<leader>cl",
       },
     }
-    -- for python file
-    -- reset buffer
+
+    -- Restart Python REPL
     vim.keymap.set("n", "<leader>rr", function()
       iron.close_repl()
       vim.defer_fn(function()
@@ -41,76 +77,85 @@ return {
       end, 100)
     end, { desc = "Restart Python REPL" })
 
-    -- clear screen
+    -- Clear Python REPL screen
     vim.keymap.set("n", "<leader>cc", function()
-      require("iron.core").send("python", { "%clear" })
+      iron.send("python", { "%clear" })
     end, { desc = "Send %clear to Python REPL" })
 
+    -- Send Python cell between # %% markers
     local function send_python_cell()
       local start = vim.fn.search("# %%", "bnW")
       if start == 0 then start = 1 end
       local finish = vim.fn.search("# %%", "nW")
-      if finish == 0 then finish = vim.fn.line("$") end
+      if finish == 0 then finish = vim.fn.line("$") + 1 end
 
-      local lines = vim.fn.getline(start + 1, finish - 1)
-      iron.send(nil, lines)
+      local lines = vim.fn.getline(start, finish - 1)
+      send_code_lines("python", lines)
     end
 
     vim.keymap.set("n", "<leader>sb", send_python_cell, { desc = "Send Python Cell to REPL" })
 
-    -- for jupyter notebook markdown
-    -- Detect and send current fenced python code block
+    -- Send current fenced python block inside markdown file
     function SendCurrentPythonBlock()
-      local start_line = nil
-      local end_line = nil
       local bufnr = vim.api.nvim_get_current_buf()
       local cursor = vim.api.nvim_win_get_cursor(0)
       local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
-      -- Search upward for the start of a python code block
+      local start_line, end_line
       for i = cursor[1] - 1, 0, -1 do
         if lines[i]:match("^```python%s*$") then
           start_line = i + 1
           break
         end
       end
-
       if not start_line then
         print("No starting ```python block found")
         return
       end
 
-      -- Search downward for the end of the code block
       for i = start_line, #lines do
         if lines[i]:match("^```%s*$") then
           end_line = i - 1
           break
         end
       end
-
       if not end_line then
         print("No closing ``` found")
         return
       end
 
-      local code_block = vim.list_slice(lines, start_line, end_line)
-      iron.send("python", code_block)
+      local block = vim.list_slice(lines, start_line, end_line)
+      -- Trim leading and trailing empty lines
+      while block[1] and block[1]:match("^%s*$") do table.remove(block, 1) end
+      while block[#block] and block[#block]:match("^%s*$") do table.remove(block, #block) end
+
+      send_code_lines("markdown", block)
     end
 
+    -- Visual selection sends dedented code to REPL with correct ft
+    vim.keymap.set("x", "<leader>sc", function()
+      local ft = vim.bo.filetype
+      local start_line = vim.fn.line("'<")
+      local end_line = vim.fn.line("'>")
+      local lines = vim.fn.getline(start_line, end_line)
+      send_code_lines(ft, lines)
+    end, { desc = "Send dedented visual selection to REPL" })
+
+    -- Map <leader>ip to send current fenced python block in markdown
     vim.api.nvim_set_keymap("n", "<leader>ip", ":lua SendCurrentPythonBlock()<CR>", { noremap = true, silent = true })
 
-    -- === Autocmd for Markdown files ===
+    -- Autocmd for markdown filetype keymaps
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "markdown",
       callback = function()
-        -- Open IPython manually instead of :IronRepl
+        -- Open IPython REPL manually with <leader>r
         vim.keymap.set("n", "<leader>r", function()
-          iron.repl_for("python") -- <== force REPL for python
+          iron.repl_for("python")
         end, { buffer = true })
 
-        -- Send fenced python block
+        -- Send fenced python block in markdown with <leader>ip
         vim.keymap.set("n", "<leader>ip", ":lua SendCurrentPythonBlock()<CR>", { buffer = true })
-      end
+      end,
     })
   end,
 }
