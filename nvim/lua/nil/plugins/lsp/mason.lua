@@ -4,8 +4,6 @@ return {
   dependencies = {
     "williamboman/mason-lspconfig.nvim",
     "WhoIsSethDaniel/mason-tool-installer.nvim",
-    "hrsh7th/cmp-nvim-lsp",
-    "neovim/nvim-lspconfig",
   },
   config = function()
     local mason = require("mason")
@@ -24,7 +22,6 @@ return {
 
     mason_lspconfig.setup({
       ensure_installed = {
-        -- LSP servers only
         "lua_ls",
         "html",
         "cssls",
@@ -36,28 +33,25 @@ return {
         "marksman",
         "ruby_lsp",
         "gopls",
+        "ts_ls",
       },
+      automatic_installation = true,
     })
 
     mason_tool_installer.setup({
       ensure_installed = {
-        -- Formatters
-        "stylua",               -- Lua
-        "prettier",             -- JS/TS/HTML/CSS
-        "black",                -- Python
-        "isort",                -- Python
-        "rubocop",              -- Ruby
-        "clang-format",         -- C/C++
-
-        -- Linters
-        "pylint",           -- Python
-        "eslint_d",         -- JS/TS
-        "ruff",             -- Python (alternative linter)
-
-        -- Debuggers
-        "debugpy",          -- Python
-        "codelldb",         -- C/C++/Rust
-        "delve",            -- Go
+        "stylua",
+        "prettier",
+        "black",
+        "isort",
+        "rubocop",
+        "clang-format",
+        "pylint",
+        "eslint_d",
+        "ruff",
+        "debugpy",
+        "codelldb",
+        "delve",
       },
       auto_update = false,
       run_on_start = true,

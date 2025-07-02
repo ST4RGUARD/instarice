@@ -3,7 +3,8 @@ return {
   version = "^5",
   lazy = false,
   config = function()
-    local capabilities = require("cmp_nvim_lsp").default_capabilities()
+    --local capabilities = require("cmp_nvim_lsp").default_capabilities()
+    local capabilities = require("blink.cmp").get_lsp_capabilities()
 
     local extension_path = vim.fn.stdpath("data") .. "/mason/packages/codelldb/extension/"
     local codelldb_path = extension_path .. "adapter/codelldb"

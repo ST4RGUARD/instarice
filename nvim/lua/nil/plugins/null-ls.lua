@@ -8,9 +8,8 @@ return {
   config = function()
     local null_ls = require("null-ls")
 
-    -- Setup Mason to ensure tools are installed
     require("mason-null-ls").setup({
-      ensure_installed = { "rubocop", "rubyfmt", "ruff", "prettier", },
+      ensure_installed = { "rubocop", "rubyfmt", "ruff", "prettier" },
       automatic_installation = true,
     })
 
@@ -28,14 +27,19 @@ return {
           to_stdin = true,
         }),
 
-        -- Python formatting ruff
-        require('none-ls.formatting.ruff').with { extra_args = { '--extend-select', 'I' } },
-        require 'none-ls.formatting.ruff_format',
+        -- Python formatting with ruff (format + lint)
+        require("none-ls.formatting.ruff").with({ extra_args = { "--extend-select", "I" } }),
+        require("none-ls.formatting.ruff_format"),
 
+        -- Go formatting tools
         null_ls.builtins.formatting.gofumpt,
         null_ls.builtins.formatting.goimports_reviser,
         null_ls.builtins.formatting.golines,
-        null_ls.builtins.formatting.prettier.with { filetypes = { 'json', 'yaml', 'markdown' } },
+
+        -- Prettier formatting for json, yaml, markdown
+        null_ls.builtins.formatting.prettier.with({
+          filetypes = { "json", "yaml", "markdown" },
+        }),
       },
 
       on_attach = function(client, bufnr)

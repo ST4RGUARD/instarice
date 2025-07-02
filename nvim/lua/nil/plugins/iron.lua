@@ -65,7 +65,7 @@ return {
             python = "python",
           },
         },
-        repl_open_cmd = "vertical botright 50 split",
+        repl_open_cmd = "vertical botright 80 split",
       },
       keymaps = {
         send_motion = "<leader>sc",
