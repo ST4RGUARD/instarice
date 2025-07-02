@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 autoload -U colors && colors
-alias kali="ssh #{user}@192.168.111.128"
+alias kali="ssh nil@192.168.111.128"
 alias per="cd /Users/#{user}/Perforce/nilRemote"
 alias p4v="sh /usr/local/bin/p4v.sh"
+#alias lsd='lsd --tree'
 export RUBYLIB="/Volumes/meep/Users/#{user}/Perforce/nilRemote/ati-unstable/tests/bpsruby/lib"
 export SEC_WORKING_DIR=/Volumes/meep/Users/#{user}/Perforce/nilRemote/ati-unstable/
 export TOOLS="/Volumes/meep/Users/#{user}/Perforce/nilRemote/tools/security/scripts"
@@ -13,7 +14,7 @@ export GOPROXY="https://proxy.golang.org,direct"
 export GOSUMDB="sum.golang.org"
 export P4_BRANCH=ati-unstable
 export P4_WORKSPACE=/Users/#{user}/Perforce/nilRemote/
-export GIT_WORKSPACE=/Users/#{user}/bitbucket
+export GIT_WORKSPACE=/Users/#{user}/git/bitbucket
 #export RUBY_CONFIG_OPTIONS="--with-openssl-dir=$(brew --prefix openssl@3)"
 #export CPATH="$(brew --prefix)/include"
 #export LIBRARY_PATH=$(brew --prefix)/lib
@@ -22,5 +23,8 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # enable frum
 eval "$(frum init)"
 
-export PATH="$HOME/.frum/versions/3.4.4/bin:/opt/homebrew/bin:$HOME/.cargo/env:$HOME/.rye/shims:/bin:/usr/bin:$HOME:/.elan/bin:$PATH"
+export PATH="$HOME/.local/share/nvim/mason/bin:$HOME/.frum/versions/3.4.4/bin:/opt/homebrew/bin:$HOME/.cargo/env:$HOME/.rye/shims:/bin:/usr/bin:$HOME:/.elan/bin:$PATH"
 source "$HOME/.rye/env"
+
+export LS_COLORS="$(cat ~/.config/lsd/.ls_colors)"
+

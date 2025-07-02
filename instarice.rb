@@ -91,6 +91,7 @@ end
 
 # Ensure ~/.config & ~/.config/ghostty exist
 FileUtils.mkdir_p("#{HOME}/.config")
+FileUtils.mkdir_p("#{HOME}/.config/lsd")
 FileUtils.mkdir_p("#{HOME}/.config/ghostty")
 FileUtils.mkdir_p("#{HOME}/.config/ghostty/themes")
 
@@ -101,6 +102,7 @@ system("chmod -R u+rwX \"$GOPATH\"")
 # Copy to ~/.config
 FileUtils.cp_r("nvim", "#{HOME}/.config/", verbose: true) if Dir.exist?("nvim")
 FileUtils.cp_r("config/starship.toml", "#{HOME}/.config/", verbose: true) if File.exist?("config/starship.toml")
+FileUtils.cp_r("config/ls_colors", "#{HOME}/.config/lsd/.ls_colors", verbose: true) if File.exist?("config/ls_colors")
 if File.exist?("config/ghostty_config")
   FileUtils.cp("config/ghostty_config", "#{HOME}/.config/ghostty/config", verbose: true)
 end
