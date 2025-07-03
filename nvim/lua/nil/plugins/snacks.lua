@@ -126,9 +126,9 @@ return {
       { "<leader>dB", function() require("snacks").bufdelete() end, desc = "Delete or Close Buffer" },
 
       -- snacks picker
-      { "<leader>pf", function() require("snacks").picker.files() end, desc = "Find Files" },
-      { "<leader>ps", function() require("snacks").picker.grep() end, desc = "Grep Word" },
-      { "<leader>pws", function() require("snacks").picker.grep_word() end, desc = "Grep Visual Selection, or Word", mode = { "n", "x"} },
+      { "<leader>pf", function() require("snacks").picker.files({ cwd = vim.fn.expand("%:p:h"), }) end, desc = "Find Files" },
+      { "<leader>ps", function() require("snacks").picker.grep({ cwd = vim.fn.expand("%:p:h"), }) end, desc = "Grep Word" },
+      { "<leader>pws", function() require("snacks").picker.grep_word({ cwd = vim.fn.expand("%:p:h"), }) end, desc = "Grep Visual Selection, or Word", mode = { "n", "x"} },
       { "<leader>pk", function() require("snacks").picker.keymaps({ layout = "ivy" }) end, desc = "Searh Keymaps" },
 
       { "<leader>gbr", function() require("snacks").picker.git_branches({ layout = "select" }) end, desc = "Pick and Switch Git Branches" },

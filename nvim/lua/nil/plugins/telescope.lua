@@ -30,7 +30,9 @@ return {
 
     vim.keymap.set("n", "<leader>/", function()
       local word = vim.fn.expand("<cWORD>")
-      builtin.grep_string({ search = word })
+      builtin.live_grep({
+        cwd = vim.fn.expand("%:p:h"),
+      })
     end, { desc = "Grep Word in CWD" })
   end
 }
