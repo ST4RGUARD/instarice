@@ -1,4 +1,4 @@
-return {
+    return {
   {
     "folke/snacks.nvim",
     priority = 1000,
@@ -118,22 +118,30 @@ return {
         },
       }
     },
-    keys = {
-      { "<leader>lg", function() require("snacks").lazygit() end, desc = "Lazygit" },
-      { "<leader>gl", function() require("snacks").lazygit.log() end, desc = "Lazygit Logs" },
-      { "<leader>es", function() require("snacks").explorer() end, desc = "Open Snacks Explorer" },
-      { "<leader>rN", function() require("snacks").rename.rename_file() end, desc = "Fast Rename File" },
-      { "<leader>dB", function() require("snacks").bufdelete() end, desc = "Delete or Close Buffer" },
 
-      -- snacks picker
-      { "<leader>pf", function() require("snacks").picker.files({ cwd = vim.fn.expand("%:p:h"), }) end, desc = "Find Files" },
-      { "<leader>ps", function() require("snacks").picker.grep({ cwd = vim.fn.expand("%:p:h"), }) end, desc = "Grep Word" },
-      { "<leader>pws", function() require("snacks").picker.grep_word({ cwd = vim.fn.expand("%:p:h"), }) end, desc = "Grep Visual Selection, or Word", mode = { "n", "x"} },
-      { "<leader>pk", function() require("snacks").picker.keymaps({ layout = "ivy" }) end, desc = "Searh Keymaps" },
+    keys = function()
+      local buffer_dir = require("nil.core.utils.buffer_dir")
 
-      { "<leader>gbr", function() require("snacks").picker.git_branches({ layout = "select" }) end, desc = "Pick and Switch Git Branches" },
-      { "<leader>th", function() require("snacks").picker.colorschemes({ layout = "ivy" }) end, desc = "Pick Colorschemes" },
-      { "<leader>vh", function() require("snacks").picker.help() end, desc = "Help Pages" },
-    }
+      return {
+        { "<leader>lg", function() require("snacks").lazygit() end, desc = "Lazygit" },
+        { "<leader>gl", function() require("snacks").lazygit.log() end, desc = "Lazygit Logs" },
+        { "<leader>es", function() require("snacks").explorer() end, desc = "Open Snacks Explorer" },
+        { "<leader>rN", function() require("snacks").rename.rename_file() end, desc = "Fast Rename File" },
+        { "<leader>dB", function() require("snacks").bufdelete() end, desc = "Delete or Close Buffer" },
+
+        -- snacks picker with dynamic cwd
+        --{ "<leader>pf", function() require("snacks").picker.files({ cwd = vim.fn.expand("%:p:h"), }) end, desc = "Find Files" },
+        --{ "<leader>ps", function() require("snacks").picker.grep({ cwd = vim.fn.expand("%:p:h"), }) end, desc = "Grep Word" },
+        --{ "<leader>pws", function() require("snacks").picker.grep_word({ cwd = vim.fn.expand("%:p:h"), }) end, desc = "Grep Visual Selection, or Word", mode = { "n", "x"} },
+        { "<leader>pf", function() require("snacks").picker.files({ cwd = buffer_dir.get_buffer_dir() }) end, desc = "Find Files" },
+        { "<leader>ps", function() require("snacks").picker.grep({ cwd = buffer_dir.get_buffer_dir() }) end, desc = "Grep Word" },
+        { "<leader>pws", function() require("snacks").picker.grep_word({ cwd = buffer_dir.get_buffer_dir() }) end, desc = "Grep Visual Selection, or Word", mode = { "n", "x" } },
+        { "<leader>pk", function() require("snacks").picker.keymaps({ layout = "ivy" }) end, desc = "Search Keymaps" },
+
+        { "<leader>gbr", function() require("snacks").picker.git_branches({ layout = "select" }) end, desc = "Pick and Switch Git Branches" },
+        { "<leader>th", function() require("snacks").picker.colorschemes({ layout = "ivy" }) end, desc = "Pick Colorschemes" },
+        { "<leader>vh", function() require("snacks").picker.help() end, desc = "Help Pages" },
+      }
+    end,
   }
 }

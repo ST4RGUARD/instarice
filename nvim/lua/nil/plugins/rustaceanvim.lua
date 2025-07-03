@@ -3,7 +3,7 @@ return {
   version = "^5",
   lazy = false,
   config = function()
-    local on_attach = require("nil.core.on_attach").common_on_attach
+    local on_attach = require("nil.core.utils.on_attach").common_on_attach
     local capabilities = require("blink.cmp").get_lsp_capabilities()
 
     local extension_path = vim.fn.stdpath("data") .. "/mason/packages/codelldb/extension/"

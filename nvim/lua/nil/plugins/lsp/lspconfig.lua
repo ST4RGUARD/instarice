@@ -10,7 +10,7 @@ return {
     local lspconfig = require("lspconfig")
     local util = lspconfig.util
     local capabilities = require("blink.cmp").get_lsp_capabilities(vim.lsp.protocol.make_client_capabilities())
-    local on_attach = require("nil.core.on_attach").common_on_attach
+    local on_attach = require("nil.core.utils.on_attach").common_on_attach
 
     -- Diagnostic icons and config here (keep as before)...
 
