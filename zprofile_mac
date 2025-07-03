@@ -4,7 +4,7 @@ autoload -U colors && colors
 alias kali="ssh nil@192.168.111.128"
 alias per="cd /Users/#{user}/Perforce/nilRemote"
 alias p4v="sh /usr/local/bin/p4v.sh"
-#alias lsd='lsd --tree'
+alias ls='lsd'
 export RUBYLIB="/Volumes/meep/Users/#{user}/Perforce/nilRemote/ati-unstable/tests/bpsruby/lib"
 export SEC_WORKING_DIR=/Volumes/meep/Users/#{user}/Perforce/nilRemote/ati-unstable/
 export TOOLS="/Volumes/meep/Users/#{user}/Perforce/nilRemote/tools/security/scripts"
