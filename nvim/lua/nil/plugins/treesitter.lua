@@ -60,25 +60,10 @@ return {
       })
     end,
   },
-
-  {
-    "nvim-treesitter/playground",
-    cmd = { "TSPlaygroundToggle", "TSHighlightCapturesUnderCursor" },
-    config = function()
-      require("nvim-treesitter.configs").setup {
-        playground = {
-          enable = true,
-          disable = {},
-          updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-          persist_queries = false,
-        },
-      }
-    end,
-  },
   -- NOTE: js,ts,jsx,tsx Auto Close Tags
   {
     "windwp/nvim-ts-autotag",
-    ft = { "html", "xml", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte" },
+    ft = { "html", "xml", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte", "markdown", "markdown_inline" },
     config = function()
       -- Independent nvim-ts-autotag setup
       require("nvim-ts-autotag").setup({
