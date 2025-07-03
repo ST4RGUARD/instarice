@@ -1,16 +1,16 @@
 return {
   "GCBallesteros/jupytext.nvim",
-  lazy = false,             -- ensure the plugin loads immediately
-  ft = { "json", "python", "markdown" },  -- trigger on notebook or text files
+  lazy = false,
+  ft = { "json", "python", "markdown" },
   config = function()
     require("jupytext").setup({
-      style = "markdown",          -- prefer Markdown output
+      style = "markdown",
       output_extension = "md",
-      force_ft = "markdown",       -- treat opened notebook as Markdown buffer
+      force_ft = "markdown",
       using_jupytext_cli = true,
     })
 
-    -- Keymap: manually export to .md if you want
+    -- manually export to .md if you want
     vim.keymap.set("n", "<leader>jm", function()
       local fname = vim.fn.expand("%:p")
       vim.fn.system({ "jupytext", "--to", "md", fname })

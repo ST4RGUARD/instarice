@@ -1,4 +1,4 @@
-local opts = {noremap = true, silent = true}
+local opts = { noremap = true, silent = true }
 
 vim.g.mapleader = ","
 vim.g.maplocaleader = ","
@@ -16,7 +16,8 @@ vim.keymap.set("n", "<C-c>", ":nohl<CR>", { desc = "Clear search hl", silent = t
 
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word cursor is on globally" })
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+  { desc = "Replace word cursor is on globally" })
 
 -- split
 vim.keymap.set("n", "<leader>sv", "<C-w>v", { desc = "split window vertically" })
@@ -34,37 +35,33 @@ vim.keymap.set("n", "<C-l>", "<C-w>l")
 local diagnostics_enabled = true
 
 function ToggleDiagnostics()
-    diagnostics_enabled = not diagnostics_enabled
-    if diagnostics_enabled then
-        vim.diagnostic.enable()
-        print("Diagnostics enabled")
-    else
-        vim.diagnostic.enable(false)
-        print("Diagnostics disabled")
-    end
+  diagnostics_enabled = not diagnostics_enabled
+  if diagnostics_enabled then
+    vim.diagnostic.enable()
+    print("Diagnostics enabled")
+  else
+    vim.diagnostic.enable(false)
+    print("Diagnostics disabled")
+  end
 end
 
--- Keybinding: Change <leader>d to your preferred key combo
+-- disable Diagnostics
 vim.keymap.set('n', '<leader>dX', ToggleDiagnostics, { noremap = true, silent = true, desc = "Toggle diagnostics" })
 
 
--- Keybinding for Converting Opened .ipynb Jupyter Notebook to Python with jupytext
+-- convert .ipynb Jupyter Notebook to Python with jupytext
 vim.keymap.set("n", "<leader>jc", function()
-  local input = vim.fn.expand("%:p")            -- full path to current file
-  local ext = vim.fn.expand("%:e")              -- file extension
+  local input = vim.fn.expand("%:p")
+  local ext = vim.fn.expand("%:e")
 
   if ext ~= "ipynb" then
     vim.notify("Not a .ipynb file", vim.log.levels.WARN)
     return
   end
 
-  -- Create output filename by changing extension
   local output = vim.fn.expand("%:r") .. ".py"
-
-  -- Construct command
   local cmd = string.format("jupytext --to py:percent --opt comment_magics=false %s -o %s", input, output)
 
-  -- Run it and notify
   vim.fn.jobstart(cmd, {
     on_exit = function(_, code)
       if code == 0 then
@@ -76,4 +73,3 @@ vim.keymap.set("n", "<leader>jc", function()
     end
   })
 end, { desc = "Convert .ipynb to .py with # %%", silent = true })
-
