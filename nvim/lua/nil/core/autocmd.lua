@@ -1,6 +1,14 @@
 local M = {}
 
 function M.setup()
+  vim.api.nvim_set_hl(0, "CurSearch", { bg = "green", fg = "black", bold = true })
+        
+  vim.api.nvim_create_autocmd("ColorScheme", {
+      callback = function()
+        vim.api.nvim_set_hl(0, "CurSearch", { bg = "green", fg = "black", bold = true })
+      end,
+    })
+
   vim.api.nvim_create_autocmd("BufReadPost", {
     pattern = "*.py",
     callback = function()
@@ -19,8 +27,10 @@ function M.setup()
       else
         require("render-markdown").disable()
       end
-    end,
+    end
   })
+
+
 end
 
 return M
