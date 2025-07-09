@@ -8,7 +8,7 @@ return {
 
     local extension_path = vim.fn.stdpath("data") .. "/mason/packages/codelldb/extension/"
     local codelldb_path = extension_path .. "adapter/codelldb"
-    local liblldb_path = extension_path .. "lldb/lib/liblldb.so"
+    local liblldb_path = extension_path .. "lldb/lib/liblldb.dylib"
 
     local cfg = require("rustaceanvim.config")
 
@@ -31,17 +31,10 @@ return {
       },
     }
 
+    local rust_utils = require("nil.core.utils.rust_root")
+
     local function cargo_run_in_project_root()
-      local buf_path = vim.api.nvim_buf_get_name(0)
-      local start_dir = vim.fn.fnamemodify(buf_path, ":p:h")
-
-      local cargo_toml = vim.fn.findfile("Cargo.toml", start_dir .. ";")
-      if cargo_toml == "" then
-        print("Cargo.toml not found in parent directories")
-        return
-      end
-
-      local root_dir = vim.fn.fnamemodify(cargo_toml, ":p:h")
+      local root_dir = rust_utils.rust_root()
 
       vim.cmd('vsplit')
       vim.cmd('terminal')

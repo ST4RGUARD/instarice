@@ -20,5 +20,26 @@ return {
     dap.listeners.before.event_terminated.dapui_config = function() dapui.close() end
     dap.listeners.before.event_exited.dapui_config = function() dapui.close() end
 
+    -- Rust config
+    local rust_utils = require("nil.core.utils.rust_root")
+
+    dap.configurations.rust = {
+      {
+        name = "Debug current file (with input)",
+        type = "codelldb",
+        request = "launch",
+        program = function()
+          local root = rust_utils.rust_root()
+          -- Grep project name from Cargo.toml
+          local cargo_toml = root .. "/Cargo.toml"
+          local name = vim.fn.system({ "sh", "-c", "grep '^name' " .. cargo_toml .. " | head -1 | cut -d '\"' -f2" })
+          local bin = vim.fn.trim(name ~= "" and name or "main")
+          return root .. "/target/debug/" .. bin
+        end,
+        cwd = rust_utils.rust_root,
+        stopOnEntry = false,
+        runInTerminal = true,
+      },
+    }
   end,
 }
