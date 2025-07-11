@@ -11,7 +11,6 @@ maybe even arch with no programming languages installed or package manager
    - ~/.config/nvim
    - ~/.config/ghostty/config
    - ~/.config/starship.toml
-   - 
 ---
 
 2. Requirements
