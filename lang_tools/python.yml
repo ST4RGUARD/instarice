@@ -1,0 +1,17 @@
+- black
+- babel
+- debugpy
+- fonttools
+- httpx
+- ipython
+- json5
+- jsonpointer
+- jsonschema
+- matplotlib
+- nbconvert
+- nbclient
+- nbformat
+- notebook
+- numpy
+- send2trash
+- websocket-client

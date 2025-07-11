@@ -81,7 +81,21 @@ fi
 print_header "Ensuring coreutils is installed (for gmkdir)"
 if ! command -v gmkdir &> /dev/null; then
   echo "Installing coreutils..."
-  $PACKAGE_MANAGER install coreutils
+  case $PACKAGE_MANAGER in
+    brew)
+      brew install coreutils
+    ;;
+  apt)
+      sudo apt update && sudo apt install -y coreutils
+    ;;
+    pacman)
+      sudo pacman -Sy --noconfirm coreutils
+  ;;
+    *)
+      echo "Unsupported package manager for coreutils: $PACKAGE_MANAGER"
+      exit 1
+      ;;
+  esac
 else
   echo "coreutils already installed"
 fi
@@ -92,7 +106,12 @@ if [[ ! -f "$SHELL_PROFILE" ]]; then
   echo "Creating $SHELL_PROFILE"
   touch "$SHELL_PROFILE"
 fi
-sudo chown "$USER":staff "$SHELL_PROFILE"
+
+if [[ "$OS" == "mac" ]]; then
+  echo "Setting permissions for $SHELL_PROFILE"
+  sudo chown "$USER":staff "$SHELL_PROFILE"
+  sudo chmod u+w "$SHELL_PROFILE"
+fi
 
 # Add Ruby to PATH for Homebrew (macOS specific fix)
 if [[ "$OS" == "mac" && "$PACKAGE_MANAGER" == "brew" ]]; then

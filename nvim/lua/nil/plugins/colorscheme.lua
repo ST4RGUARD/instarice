@@ -266,7 +266,7 @@ return {
         style = "warm", -- Options: 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer', 'light'
         transparent = true,
       })
-    vim.cmd("colorscheme onedark")
+    -- vim.cmd("colorscheme onedark")
     end,
   },
 

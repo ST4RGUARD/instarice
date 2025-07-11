@@ -1,0 +1,4 @@
+- github.com/go-delve/delve/cmd/dlv@latest
+- mvdan.cc/gofumpt@latest
+- github.com/incu6us/goimports-reviser/v3@latest
+- github.com/segmentio/golines@latest

@@ -52,21 +52,28 @@ end
 
 header("Copying config files")
 
+# utility
 current_user = `whoami`.strip
-
+arch = `uname -m`.strip
+case arch
+when "arm64", "aarch64"
+  arch = "arm64"
+when "x86_64"
+  arch = "amd64"
+end
 # Shell config: mac gets special files, linux uses regular .zshrc
 if os == "mac"
   log("Detected macOS. Using mac-specific zsh config files.")
 
-  if File.exist?("zshrc_mac")
-    FileUtils.cp("zshrc_mac", "#{HOME}/.zshrc", verbose: true)
+  if File.exist?("../dotfiles/zshrc_mac")
+    FileUtils.cp("../dotfiles/zshrc_mac", "#{HOME}/.zshrc", verbose: true)
     log("Copied zshrc_mac → ~/.zshrc")
   else
     error("Missing zshrc_mac file!")
   end
 
-  if File.exist?("zprofile_mac")
-    content = File.read("zprofile_mac").gsub("\#{user}", current_user)
+  if File.exist?("../dotfiles/zprofile_mac")
+    content = File.read("../dotfiles/zprofile_mac").gsub("\#{user}", current_user)
     File.write("#{HOME}/.zprofile", content)
     log("Copied zprofile_mac → ~/.zprofile with user substitution")
   else
@@ -76,17 +83,22 @@ if os == "mac"
   # linux
 else
   log("Detected Linux. Copying standard .zshrc")
-  if File.exist?(".zshrc")
-    FileUtils.cp(".zshrc", "#{HOME}/.zshrc", verbose: true)
-    log("Copied .zshrc → ~/.zshrc")
+  if File.exist?("../dotfiles/zshrc_linux")
+    FileUtils.cp("../dotfiles/zshrc_linux", "#{HOME}/.zshrc", verbose: true)
+    log("Copied zshrc_linux → ~/.zshrc")
   else
     error("Missing .zshrc file!")
   end
 end
 
 # Copy to ~/
-%w[.irbrc .vimrc .vim].each do |item|
-  FileUtils.cp_r(item, "#{HOME}/", verbose: true) if File.exist?(item)
+%w[../dotfiles/irbrc ../dotfiles/vimrc ../vim].each do |item|
+  next unless File.exist?(item)
+
+  basename = File.basename(item)
+  target = File.join(HOME, ".#{basename}")
+
+  FileUtils.cp_r(item, target, verbose: true)
 end
 
 # Ensure ~/.config & ~/.config/ghostty exist
@@ -100,14 +112,39 @@ FileUtils.mkdir_p("~/go")
 system("chmod -R u+rwX \"$GOPATH\"")
 
 # Copy to ~/.config
-FileUtils.cp_r("nvim", "#{HOME}/.config/", verbose: true) if Dir.exist?("nvim")
-FileUtils.cp_r("config/starship.toml", "#{HOME}/.config/", verbose: true) if File.exist?("config/starship.toml")
-FileUtils.cp_r("config/ls_colors", "#{HOME}/.config/lsd/.ls_colors", verbose: true) if File.exist?("config/ls_colors")
-if File.exist?("config/ghostty_config")
-  FileUtils.cp("config/ghostty_config", "#{HOME}/.config/ghostty/config", verbose: true)
+if File.exist?("../dotfiles/starship.toml")
+  FileUtils.cp_r("../dotfiles/starship.toml", "#{HOME}/.config/", verbose: true)
 end
 
-FileUtils.cp_r("themes", "#{HOME}/.config/ghostty", verbose: true) if Dir.exist?("themes")
+# nvim
+FileUtils.cp_r("../nvim", "#{HOME}/.config/", verbose: true) if Dir.exist?("../nvim")
+if os == "mac"
+  if File.exist?("../nvim/lua/nil/plugins/rustaceanvim.lua_mac")
+    FileUtils.cp(
+      "../nvim/lua/nil/plugins/rustaceanvim.lua_mac",
+      "#{HOME}/.config/nvim/lua/nil/plugins/rustaceanvim.lua",
+      verbose: true
+    )
+  end
+else
+  if File.exist?("../nvim/lua/nil/plugins/rustaceanvim.lua_linux")
+    FileUtils.cp(
+      "../nvim/lua/nil/plugins/rustaceanvim.lua_linux",
+      "#{HOME}/.config/nvim/lua/nil/plugins/rustaceanvim.lua",
+      verbose: true
+    )
+  end
+end
+
+if File.exist?("../dotfiles/ls_colors")
+  FileUtils.cp_r("../dotfiles/ls_colors", "#{HOME}/.config/lsd/.ls_colors", verbose: true)
+end
+
+if File.exist?("../dotfiles/ghostty_config")
+  FileUtils.cp("../dotfiles/ghostty_config", "#{HOME}/.config/ghostty/config", verbose: true)
+end
+
+FileUtils.cp_r("../dotfiles/themes", "#{HOME}/.config/ghostty", verbose: true) if Dir.exist?("../dotfiles/themes")
 
 # ---------- Ascii Image Converter ----------
 header("Installing ascii-image-converter and copying image")
@@ -121,10 +158,11 @@ def install_ascii_image_converter(os)
     require "open-uri"
     require "json"
 
-    api_url = "https://api.github.com/repos/TheZoraiz/ascii-image-converter/releases/latest"
+    # can just add binary to our repo later if it keeps changing
+    api_url = "https://github.com/TheZoraiz/ascii-image-converter/releases/latest"
     latest_release = JSON.parse(URI.open(api_url).read)
     asset = latest_release["assets"].find { |a|
-      a["name"].include?("ascii-image-converter") && a["name"].end_with?(".tar.gz")
+      a["name"].include?("ascii-image-converter") && a["name"].include?("#{arch}") && a["name"].end_with?(".tar.gz")
     }
 
     unless asset
@@ -155,7 +193,7 @@ def install_ascii_image_converter(os)
 end
 
 def copy_image
-  source_image = File.join(Dir.pwd, "beyonder.jpg")
+  source_image = File.join(Dir.pwd, "../beyonder.jpg")
   target_dir = File.join(Dir.home, "Pictures")
   target_path = File.join(target_dir, "beyonder.jpg")
 
@@ -176,9 +214,9 @@ header("App Installation")
 
 # ---------- Package Manager Detection ----------
 def find_package_manager
-  return "brew" if `which brew` != ""
-  return "apt" if `which apt` != ""
-  return "pacman" if `which pacman` != ""
+  return "brew" if `which brew` != "brew not found"
+  return "apt" if `which apt` != "apt not found"
+  return "pacman" if `which pacman` != "pacman not found"
   nil
 end
 
@@ -250,8 +288,6 @@ def install_openssl_for_ruby(os, pkg_manager)
       error("Unsupported Linux package manager for OpenSSL install.")
       return nil
     end
-
-    "/usr"
   else
     error("Unsupported OS for OpenSSL setup.")
     nil
@@ -274,26 +310,35 @@ def install_lang_pkg(name, os, pkg_manager)
     end
 
   when :python
-    os == "mac" ? system("brew install rye") : system("curl -sSf https://rye-up.com/get | bash")
+    os == "mac" ? system("brew install rye") : system("curl -sSf https://rye.astral.sh/get | bash")
   when :rust
     system("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y")
-  when :go
-    os == "mac" ? system("brew install go") : system("#{pkg_manager} install -y golang")
-  when :node
-    os == "mac" ? system("brew install node") : system("#{pkg_manager} install -y nodejs npm")
+  when :go, :node
+    case os
+    when "mac"
+      system("brew install #{name}")
+    when "linux"
+      name = "nodejs npm"
+      case pkg_manager
+      when "apt"
+        system("sudo #{pkg_manager} install -y #{name}")
+      when "pacman"
+        system("sudo pacman -S --noconfirm #{name}")
+      end
+    end
   end
 end
 
 lang_tools = []
 
 if ask_yes_no("Do you want to install all languages from lang.yml?")
-  YAML.load_file("lang.yml").each do |lang|
+  YAML.load_file("../lang_tools/lang.yml").each do |lang|
     lang_sym = lang.strip.downcase.to_sym
     install_lang_pkg(lang_sym, os, pkg_manager)
     lang_tools << lang.downcase
   end
 else
-  YAML.load_file("lang.yml").each do |lang|
+  YAML.load_file("../lang_tools/lang.yml").each do |lang|
     lang_sym = lang.strip.downcase.to_sym
     install_lang_pkg(lang_sym, os, pkg_manager) if ask_yes_no("Install #{lang_sym}?")
     lang_tools << lang.downcase
@@ -312,9 +357,14 @@ header("Please restart your terminal or run: source ~/.zshrc")
 
 # ---------- Language Tools ------
 # -- python
+# rye global tool install
 if lang_tools.include?("python")
-  system("rye install debugpy")
-  system("rye install black")
+  if File.exist?("../lang_tools/python.yml")
+    YAML.load_file("../lang_tools/python.yml").each do |tool_name|
+      tool = tool_name.strip.downcase
+      system("rye install #{tool}")
+    end
+  end
 end
 # -- ruby
 if lang_tools.include?("ruby")
@@ -325,10 +375,11 @@ if lang_tools.include?("ruby")
   ENV["PATH"] = "#{frum_ruby_bin}:#{ENV["PATH"]}"
 
   # Install gems
-  gems = ["interactive_editor"]
-  gems.each do |gem|
-    log("Installing Ruby gem: #{gem}")
-    system("gem install #{gem}")
+  if File.exist?("../lang_tools/ruby.yml")
+    YAML.load_file("../lang_tools/ruby.yml").each do |gem_name|
+      gem = gem_name.strip.downcase
+      system("gem install #{gem}")
+    end
   end
 
   Dir.chdir(sib_dir) do
@@ -338,10 +389,12 @@ if lang_tools.include?("ruby")
 end
 # -- golang
 if lang_tools.include?("go")
-  system("go install github.com/incu6us/goimports-reviser/v3@latest")
-  system("go install mvdan.cc/gofumpt@latest")
-  system("go install github.com/segmentio/golines@latest")
-  system("go install github.com/go-delve/delve/cmd/dlv@latest")
+  if File.exist?("../lang_tools/go.yml")
+    YAML.load_file("../lang_tools/go.yml").each do |go_tool|
+      tool_path = go_tool.strip.downcase
+      system("go install #{tool_path}")
+    end
+  end
 end
 
 # ---------- Cleanup ----------

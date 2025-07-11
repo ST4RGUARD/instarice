@@ -12,8 +12,6 @@ return {
     local capabilities = require("blink.cmp").get_lsp_capabilities(vim.lsp.protocol.make_client_capabilities())
     local on_attach = require("nil.core.utils.on_attach").common_on_attach
 
-    -- Diagnostic icons and config here (keep as before)...
-
     local servers = {
       lua_ls = {
         settings = {
@@ -29,7 +27,6 @@ return {
           },
         },
       },
-      -- other servers here ...
     }
 
     require("mason").setup()
@@ -40,7 +37,7 @@ return {
     })
 
     mason_lspconfig.setup_handlers {
-      function(server_name) -- default handler
+      function(server_name)
         local opts = {
           on_attach = on_attach,
           capabilities = capabilities,
