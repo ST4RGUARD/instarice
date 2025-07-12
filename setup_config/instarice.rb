@@ -92,7 +92,7 @@ else
 end
 
 # Copy to ~/
-%w[../dotfiles/irbrc ../dotfiles/vimrc ../vim ../dotfiles/rubocop.yml].each do |item|
+%w[../dotfiles/irbrc ../dotfiles/rubocop.yml].each do |item|
   next unless File.exist?(item)
 
   basename = File.basename(item)
