@@ -15,18 +15,6 @@ return {
     map("n", "<leader>lp", ":LivePreview start<CR>", { desc = "Start Live Preview (current file)" })
     map("n", "<leader>ls", ":LivePreview close<CR>", { desc = "Stop Live Preview" })
 
-    map("n", "<leader>lj", function()
-      require("telescope.builtin").find_files({
-        prompt_title = "LivePreview Pick",
-        attach_mappings = function(_, map)
-          map("i", "<CR>", function(bufnr)
-            local entry = require("telescope.actions.state").get_selected_entry()
-            require("telescope.actions").close(bufnr)
-            vim.cmd("LivePreview " .. entry.value)
-          end)
-          return true
-        end,
-      })
-    end, { desc = "Custom LivePreview Picker" })
+    vim.keymap.set("n", "<leader>lk", ":LivePreview pick<CR>", { desc = "LivePreview Picker" })
   end,
 }
