@@ -18,6 +18,7 @@ require('lazy').setup {
   spec = {
     { import = 'nil.plugins' },
     { import = "nil.plugins.lsp" },
+    { import = "nil.plugins.dap" },
   },
   defaults = {
     lazy = false,

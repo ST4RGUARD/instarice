@@ -7,7 +7,7 @@ return {
       open_mapping = [[<C-\>]],
       direction = "float", -- can be "horizontal", "vertical", "float", or "tab"
       float_opts = {
-        width = 80,
+        width = 100,
         height = 20,
         border = "curved",
         winblend = 0,
