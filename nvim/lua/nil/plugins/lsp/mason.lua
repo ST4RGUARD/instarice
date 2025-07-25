@@ -31,7 +31,6 @@ return {
         "pyright",
         "emmet_ls",
         "marksman",
-        "ruby_lsp",
         "gopls",
         "ts_ls",
       },
@@ -41,14 +40,11 @@ return {
     mason_tool_installer.setup({
       ensure_installed = {
         "stylua",
-        "prettier",
         "black",
         "isort",
-        "rubocop",
         "clang-format",
         "pylint",
         "eslint_d",
-        "ruff",
         "debugpy",
         "codelldb",
         "delve",

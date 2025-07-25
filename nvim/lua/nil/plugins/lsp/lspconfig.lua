@@ -8,9 +8,13 @@ return {
   },
   config = function()
     local lspconfig = require("lspconfig")
-    local util = lspconfig.util
     local capabilities = require("blink.cmp").get_lsp_capabilities(vim.lsp.protocol.make_client_capabilities())
     local on_attach = require("nil.core.utils.on_attach").common_on_attach
+    local mason_lspconfig = require("mason-lspconfig")
+    local home = os.getenv("HOME")
+    local ruby_root = home .. "/.frum/versions/3.4.4/bin"
+
+    -- Diagnostic icons and config here (keep as before)...
 
     local servers = {
       lua_ls = {
@@ -27,26 +31,49 @@ return {
           },
         },
       },
+
+      ruby_lsp = {
+        cmd = {
+          ruby_root .. "/ruby",
+          ruby_root .. "/ruby-lsp",
+        },
+        cmd_env = {
+          PATH = ruby_root .. ":" .. vim.env.PATH,
+          GEM_HOME = os.getenv("GEM_HOME"),
+          GEM_PATH = os.getenv("GEM_PATH"),
+        },
+      },
     }
 
-    require("mason").setup()
-    local mason_lspconfig = require("mason-lspconfig")
-    mason_lspconfig.setup({
-      ensure_installed = { "lua_ls", "gopls", "ts_ls", "emmet_ls", "denols" },
-      automatic_installation = true,
+    -- After mason_lspconfig.setup(...)
+    local installed_servers = mason_lspconfig.get_installed_servers()
+
+    for _, server_name in ipairs(installed_servers) do
+      local opts = {
+        on_attach = on_attach,
+        capabilities = capabilities,
+      }
+
+      if servers[server_name] then
+        opts = vim.tbl_deep_extend("force", opts, servers[server_name])
+      end
+
+      lspconfig[server_name].setup(opts)
+    end
+
+    lspconfig.ruby_lsp.setup({
+      cmd = {
+        ruby_root .. "/ruby",
+        ruby_root .. "/ruby-lsp",
+      },
+      cmd_env = {
+        PATH = ruby_root .. ":" .. vim.env.PATH,
+        GEM_HOME = os.getenv("GEM_HOME"),
+        GEM_PATH = os.getenv("GEM_PATH"),
+      },
+      on_attach = on_attach,
+      capabilities = capabilities,
     })
-
-    mason_lspconfig.setup_handlers {
-      function(server_name)
-        local opts = {
-          on_attach = on_attach,
-          capabilities = capabilities,
-        }
-        if servers[server_name] then
-          opts = vim.tbl_deep_extend("force", opts, servers[server_name])
-        end
-        lspconfig[server_name].setup(opts)
-      end,
-    }
   end,
+
 }

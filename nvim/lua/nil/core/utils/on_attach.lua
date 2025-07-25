@@ -2,6 +2,15 @@
 local M = {}
 
 function M.common_on_attach(client, bufnr)
+  for _, c in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+    if c.name == client.name and c.id ~= client.id then
+      vim.schedule(function()
+        vim.lsp.stop_client(client.id)
+      end)
+      return
+    end
+  end
+
   print("[on_attach] LSP attached:", client.name, "buffer:", bufnr)
   local opts = { buffer = bufnr, silent = true }
 
