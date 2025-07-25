@@ -105,6 +105,7 @@ end
 FileUtils.mkdir_p("#{HOME}/.config")
 FileUtils.mkdir_p("#{HOME}/.config/lsd")
 FileUtils.mkdir_p("#{HOME}/.config/ghostty")
+FileUtils.mkdir_p("#{HOME}/.config/aerospace")
 FileUtils.mkdir_p("#{HOME}/.config/ghostty/themes")
 
 # Go setup
@@ -145,6 +146,10 @@ if File.exist?("../dotfiles/ghostty_config")
 end
 
 FileUtils.cp_r("../dotfiles/themes", "#{HOME}/.config/ghostty", verbose: true) if Dir.exist?("../dotfiles/themes")
+
+if File.exist?("../dotfiles/aerospace.toml")
+  FileUtils.cp("../dotfiles/aerospace.toml", "#{HOME}/.config/aerospace/aerospace.toml", verbose: true)
+end
 
 # ---------- Ascii Image Converter ----------
 header("Installing ascii-image-converter and copying image")
