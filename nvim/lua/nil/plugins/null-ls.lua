@@ -20,13 +20,6 @@ return {
           command = vim.fn.stdpath("data") .. "/mason/bin/rubyfmt",
         }),
 
-        -- Ruby diagnostics using rubocop
-        null_ls.builtins.diagnostics.rubocop.with({
-          command = vim.fn.stdpath("data") .. "/mason/bin/rubocop",
-          args = { "--format", "json", "--force-exclusion", "--stdin", "$FILENAME" },
-          to_stdin = true,
-        }),
-
         -- Python formatting with ruff (format + lint)
         require("none-ls.formatting.ruff").with({ extra_args = { "--extend-select", "I" } }),
         require("none-ls.formatting.ruff_format"),
