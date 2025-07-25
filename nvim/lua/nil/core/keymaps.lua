@@ -15,6 +15,8 @@ vim.keymap.set("n", "x", '"_x', opts)
 
 vim.keymap.set("n", "<C-c>", ":nohl<CR>", { desc = "Clear search hl", silent = true })
 
+vim.keymap.set('i', '<C-a>', 'copilot#Accept("\\<CR>")', { expr = true, silent = true, replace_keycodes = false, desc = 'Copilot: Accept suggestion' })
+
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
