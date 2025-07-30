@@ -19,6 +19,8 @@ vim.keymap.set('i', '<C-a>', 'copilot#Accept("\\<CR>")', { expr = true, silent =
 
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
+vim.keymap.set('n', '<leader>br', ':!bun run %<CR>', { noremap = true })
+
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
   { desc = "Replace word cursor is on globally" })
 
