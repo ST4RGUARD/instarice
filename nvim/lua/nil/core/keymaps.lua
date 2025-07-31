@@ -19,10 +19,37 @@ vim.keymap.set('i', '<C-a>', 'copilot#Accept("\\<CR>")', { expr = true, silent =
 
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
-vim.keymap.set('n', '<leader>br', ':!bun run %<CR>', { noremap = true })
+vim.keymap.set('n', '<leader>br', function()
+  -- Open a vertical split and open a terminal there running 'bun run %'
+  vim.cmd('vsplit')
+  vim.cmd('terminal bun run ' .. vim.fn.expand('%'))
+end, { noremap = true, silent = true })
 
+-- replace
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
   { desc = "Replace word cursor is on globally" })
+
+vim.keymap.set("v", "<leader>j", function()
+  -- Get visual selection
+  local _, lsrow, lscol, _ = unpack(vim.fn.getpos("'<"))
+  local _, lerow, lecol, _ = unpack(vim.fn.getpos("'>"))
+  local lines = vim.fn.getline(lsrow, lerow)
+  if #lines == 0 then return end
+
+  lines[#lines] = string.sub(lines[#lines], 1, lecol)
+  lines[1] = string.sub(lines[1], lscol)
+  local selection = table.concat(lines, "\n")
+  selection = vim.fn.escape(selection, '/\\')
+
+  -- Prompt for replacement
+  local replacement = vim.fn.input("Replace with: ")
+
+  -- Set arglist to files in current dir only (not recursive)
+  vim.cmd("args `find . -maxdepth 1 -type f`")
+
+  -- Perform the substitution
+  vim.cmd("argdo %s/" .. selection .. "/" .. replacement .. "/g | update")
+end, { desc = "Replace visual selection across current dir files" })
 
 -- split
 vim.keymap.set("n", "<leader>sv", "<C-w>v", { desc = "split window vertically" })
