@@ -25,6 +25,14 @@ vim.keymap.set('n', '<leader>br', function()
   vim.cmd('terminal bun run ' .. vim.fn.expand('%'))
 end, { noremap = true, silent = true })
 
+-- c / cpp run
+vim.api.nvim_set_keymap(
+  "n",
+  "<leader>r",
+  [[:w<CR>:vsplit | terminal cd %:p:h && g++ % -o %:t:r; echo 'Compiled.'; exec zsh<CR>]],
+  { noremap = true, silent = true }
+)
+
 -- replace
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
   { desc = "Replace word cursor is on globally" })

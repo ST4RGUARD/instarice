@@ -39,6 +39,8 @@ return {
         liquid = { 'prettier' },
         lua = { 'stylua' },
         python = { 'black' },
+        c = { 'clang_format' },
+        cpp = { 'clang_format' },
         markdown = { 'prettier' },
         ['markdown.mdx'] = { 'prettier', 'markdownlint-cli2', 'markdown-toc' },
       },

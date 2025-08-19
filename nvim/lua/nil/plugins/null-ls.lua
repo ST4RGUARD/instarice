@@ -33,6 +33,11 @@ return {
         null_ls.builtins.formatting.prettier.with({
           filetypes = { "json", "yaml", "markdown" },
         }),
+
+        -- Formatter for C/C++
+        null_ls.builtins.formatting.clang_format.with({
+          command = "~/.local/share/nvim/mason/bin/clang-format",
+        }),
       },
 
       on_attach = function(client, bufnr)
