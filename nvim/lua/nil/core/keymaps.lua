@@ -29,9 +29,23 @@ end, { noremap = true, silent = true })
 vim.api.nvim_set_keymap(
   "n",
   "<leader>r",
-  [[:w<CR>:vsplit | terminal cd %:p:h && g++ % -o %:t:r; echo 'Compiled.'; exec zsh<CR>]],
+  [[:w<CR>:vsplit | terminal cd %:p:h && g++ -std=c++23 % -o %:t:r; echo 'g++ % -o %:t:r'; exec zsh<CR>]],
   { noremap = true, silent = true }
 )
+
+vim.keymap.set("n", "<leader>rh", function()
+  local dir = vim.fn.expand("%:p:h")
+  local files = vim.fn.glob(dir .. "/*.c", false, true)
+  vim.list_extend(files, vim.fn.glob(dir .. "/*.cpp", false, true))
+  local out = vim.fn.expand("%:t:r")
+  local cmd = "g++ " .. table.concat(files, " ") .. " -o " .. out
+  local basenames = {}
+  for _, f in ipairs(files) do
+    table.insert(basenames, vim.fn.fnamemodify(f, ":t"))
+  end
+  local echo_cmd = "g++ -std=c++23 " .. table.concat(basenames, " ") .. " -o " .. out
+  vim.cmd("vsplit | terminal cd " .. dir .. " && echo '" .. echo_cmd .. "' && " .. cmd .. "; exec zsh")
+end, { noremap = true, silent = true, desc = "Compile and link all .c/.cpp files in dir" })
 
 -- replace
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
