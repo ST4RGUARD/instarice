@@ -38,6 +38,7 @@ return {
         null_ls.builtins.formatting.clang_format.with({
           command = "~/.local/share/nvim/mason/bin/clang-format",
         }),
+
       },
 
       on_attach = function(client, bufnr)

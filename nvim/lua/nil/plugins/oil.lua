@@ -26,7 +26,7 @@ return {
     vim.api.nvim_create_user_command("Term", function()
       local dir = require("nil.core.utils.buffer_dir").get_buffer_dir()
       if dir and dir ~= "" then
-        vim.cmd("lcd " .. vim.fn.fnameescape(dir))
+        vim.cmd("cd " .. vim.fn.fnameescape(dir))
       end
       vim.cmd("terminal")
     end, {})

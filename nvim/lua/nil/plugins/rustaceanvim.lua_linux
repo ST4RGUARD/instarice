@@ -1,6 +1,6 @@
 return {
   "mrcjkb/rustaceanvim",
-  version = "^5",
+  version = "^7",
   lazy = false,
   config = function()
     local on_attach = require("nil.core.utils.on_attach").common_on_attach

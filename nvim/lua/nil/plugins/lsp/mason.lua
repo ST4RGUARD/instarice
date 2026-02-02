@@ -33,13 +33,36 @@ return {
         "marksman",
         "gopls",
         "ts_ls",
+        "rubocop",
+        "ruff",
       },
       automatic_installation = true,
     })
 
+    -- configure & enable servers
+    local servers = {
+      clangd = {},
+      rubocop = {},
+      ruff = {},
+      cssls = {},
+      denols = {},
+      html = {},
+      jsonls = {},
+      lua_ls = {},
+      marksman = {},
+      gopls = {},
+      pyright = {},
+      ts_ls = {},
+      emmet_ls = {},
+    }
+
+    for name, config in pairs(servers) do
+      vim.lsp.config(name, config) -- config
+      vim.lsp.enable(name)         -- enable
+    end
+
     mason_tool_installer.setup({
       ensure_installed = {
-        "stylua",
         "black",
         "isort",
         "clang-format",

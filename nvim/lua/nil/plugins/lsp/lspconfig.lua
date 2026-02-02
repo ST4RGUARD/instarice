@@ -13,7 +13,7 @@ return {
     local mason_lspconfig = require("mason-lspconfig")
 
     local home = os.getenv("HOME")
-    local ruby_root = home .. "/.frum/versions/3.4.4/bin"
+    local ruby_root = home .. "/.frum/versions/4.0.1/bin"
 
     -- LSP configurations for manually handled servers
     local manual_servers = {
