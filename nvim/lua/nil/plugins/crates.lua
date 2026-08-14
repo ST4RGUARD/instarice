@@ -1,16 +1,18 @@
 return {
   'saecki/crates.nvim',
-  ft = { "toml" },
+  tag = 'stable',
+  event = { 'BufRead Cargo.toml' },
+  dependencies = { 'saghen/blink.cmp' }, -- Ensure blink is declared as a dependency
   config = function()
-    require("crates").setup {
+    require('crates').setup {
       completion = {
+        blink = {
+          enable = true,
+        },
         cmp = {
-          enabled = true
+          enabled = false,
         },
       },
     }
-    require('cmp').setup.buffer({
-      sources = { { name = "creates" } }
-    })
-  end
+  end,
 }

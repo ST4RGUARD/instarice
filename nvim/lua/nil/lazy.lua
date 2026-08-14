@@ -13,13 +13,12 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   end
 end
 vim.opt.rtp:prepend(lazypath)
-vim.env.BROWSER = "open"
+vim.env.BROWSER = 'open'
 
 require('lazy').setup {
   spec = {
     { import = 'nil.plugins' },
-    { import = "nil.plugins.lsp" },
-    { import = "nil.plugins.dap" },
+    { import = 'nil.plugins.lsp' },
   },
   defaults = {
     lazy = false,
